@@ -99,6 +99,8 @@ defaults:
       read_time: true
       comments: true
       excerpt_separator: "<!--more-->"
+      categories:
+        - 所有分类
       # share: true
       related: true
   # _pages
