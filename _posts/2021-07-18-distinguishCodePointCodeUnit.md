@@ -1,0 +1,74 @@
+---
+title : "区分码点和码元——String中的字节流"
+categories:
+  - Java
+tags:
+  - 末节
+---
+
+## 概述
+
+Java中String的设计是在Unicode编码尚未完成时进行的，原本用来表示世界上所有字符的16个位在后期不能胜任这个任务。Java使用了一种**可变长的，向后兼容的编码，UTF-16**。
+
+* 典型的（可以在16位以内表示的字符）用一个16位编码来表示，占用一个char；
+
+* 占用位数超过16位的字符用一组（几个）*来自编码空间中特殊区域的16位编码（称作surrogate characters）*来表示，占用多个char；
+
+能表示一个字符的16位的（一个char）或n*16位（多个char）的编码称作码点，每个16位编码（每个char）称作码元。
+
+## 实验
+
+输出每个**码元（code unit）**
+
+```Java
+String str = "𝕆";
+System.out.println(str.length());
+for(char e : str.toCharArray()){
+    System.out.print(e+": ");
+    System.out.printf("\\u%04x\n", (inte);
+}
+```
+
+这段代码的输出是
+
+```tex
+2
+?: \ud835
+?: \udd46
+```
+
+输出每个**码点（code point)**
+
+```java
+int i = 0;
+while (i < str.length()) {
+    int j = str.offsetByCodePoints(i, ;   //j will be 2, offset 1 codepoinof(𝕆) is 2 codeunit(2 char)
+    String codePoint = str.substring(i, ;
+    System.out.println(codePoint);
+    i = j;
+}
+```
+
+### 完整代码
+
+```java
+public class CodePointTest {
+    public static void main(String[] args) {
+        String str = "𝕆";
+        System.out.println(str.length());
+        for (char e : str.toCharArray()) {
+            System.out.print(e + ": ");
+            System.out.printf("\\u%04x\n", (int) e);
+        }
+
+        int i = 0;
+        while (i < str.length()) {
+            int j = str.offsetByCodePoints(i, 1);   //j will be 2, offset 1 codepoint of(𝕆) is 2 codeunit(2 char)
+            String codePoint = str.substring(i, j);
+            System.out.println(codePoint);
+            i = j;
+        }
+
+    }
+}
+```
