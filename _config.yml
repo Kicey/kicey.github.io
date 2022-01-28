@@ -58,7 +58,7 @@ plugins:
 
 author:
   name   : "Kicey"
-  avatar : "/assets/images/bio-photo.jpg"
+  avatar : "/assets/images/kicey.jpg"
   bio    : "凡是过往，皆为序章"
   links:
     - label: "Website"
