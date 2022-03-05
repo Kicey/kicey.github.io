@@ -40,6 +40,8 @@ nginx的配置位于`/etc/nginx/`目录下
 
 nginx.conf中会使用`include`的形式引用其他的命令，注意`include`是在原地引入，类似C/C++中的宏展开
 
+主要有两个目录sites-available和sites-enable，sites-available中存在有效的配置文件，sites-enable是启用的配置文件，以快捷方式引用sites-available中的配置文件，默认情况下导入sites-enable目录中的配置文件，也可以在nginx.conf中修改
+
 注意结构如下
 
 ```te
