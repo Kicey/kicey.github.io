@@ -15,7 +15,7 @@ spring security主要做两件事：
 
 ```mermaid
 flowchart LR
-	
+
 	subgraph tomcat
 		subgraph FilterChain
 		Filter0 --> ..0[...]
@@ -73,11 +73,13 @@ flowchart LR
 		end
 		
 	end
-	
+
 DelegatingFilterProxy -.-> SecurityFilterChain
 SecurityFilterChain -.-> DelegatingFilterProxy
 Servlet -.-> proxiedController
 ```
+
+![image-20220130120636750](../assets/images/2022-01-30-spring-security概览.assets/image-20220130120636750.png)
 
 ## 认证
 
