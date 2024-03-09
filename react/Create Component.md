@@ -18,5 +18,5 @@ function createElement<P extends {}>(
 ): ReactElement<P>;
 ```
 
-To define a custom component, if use `class`, extends the `React.Component` and access the props through `this.props.property_name`.
+To define a custom component, if use `class`, extends the `React.Component` , `implements the `and access the props through `this.props.property_name`.
 
