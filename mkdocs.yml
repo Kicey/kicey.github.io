@@ -3,6 +3,16 @@ theme:
   name: material
   logo: ./images/logo.svg
   favicon: images/logo.png
+  site_url: https://kicey.github.io
+  features:
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.path
+    - navigation.indexes
+    - navigation.top
   palette: 
 
     # Palette toggle for light mode
