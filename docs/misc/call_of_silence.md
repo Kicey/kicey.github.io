@@ -1,3 +1,4 @@
+Call of Silence 吉他乐谱（gt2312，简化版本）
 ![image-20230719205408666](images/call_of_silence/image-20230719205408666.png)
 ![image-20230719205511442](images/call_of_silence/image-20230719205511442.png)
 ![image-20230719212355748](images/call_of_silence/image-20230719212355748.png)
