@@ -1,3 +1,3 @@
 # 个人笔记
 
-![avator](images/avator.png)
+![avator](./docs/images/avator.png)
