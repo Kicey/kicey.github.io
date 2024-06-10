@@ -2,6 +2,7 @@ site_name: kicey's blog
 theme:
   name: material
   logo: ./images/logo.svg
+  favicon: images/logo.png
   palette: 
 
     # Palette toggle for light mode
