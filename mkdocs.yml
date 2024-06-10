@@ -2,7 +2,7 @@ site_name: kicey's blog
 theme:
   name: material
   logo: ./images/logo.svg
-  favicon: ./images/logo.png
+  favicon: ./images/logo.svg
   site_url: https://kicey.github.io
   features:
     - navigation.instant
