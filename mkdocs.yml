@@ -1,6 +1,13 @@
 site_name: kicey's blog
 plugins:
   - blog
+  - rss:
+      match_path: blog/posts/.* 
+      date_from_meta:
+        as_creation: date
+      categories:
+        - categories
+        - tags
 theme:
   name: material
   logo: ./images/logo.svg
