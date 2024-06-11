@@ -1,4 +1,6 @@
 site_name: kicey's blog
+plugins:
+  - blog
 theme:
   name: material
   logo: ./images/logo.svg
