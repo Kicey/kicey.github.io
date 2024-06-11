@@ -39,5 +39,6 @@ theme:
         name: Switch to light mode
 nav:
   - index.md
+  - Java
   - Blog:
     - blog/index.md
