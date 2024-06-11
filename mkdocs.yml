@@ -40,6 +40,6 @@ theme:
 nav:
   - index.md
   - Java:
-    - '内存布局': java/java 内存结构.md
+    - 内存布局: java/java 内存结构.md
   - Blog:
     - blog/index.md
