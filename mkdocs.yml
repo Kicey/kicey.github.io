@@ -41,5 +41,7 @@ nav:
   - index.md
   - Java:
     - 内存布局: java/java 内存结构.md
+  - React:
+    - Function Style Component: react/4. funcion style component.md
   - Blog:
     - blog/index.md
