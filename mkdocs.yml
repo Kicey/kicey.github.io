@@ -1,6 +1,7 @@
 site_name: kicey's blog
 plugins:
   - blog
+  - search
   - rss:
       match_path: blog/posts/.* 
       date_from_meta:
