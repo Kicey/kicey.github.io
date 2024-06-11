@@ -1,7 +1,7 @@
 site_name: kicey's blog
 plugins:
   - blog:
-    blog_dir: blog
+      blog_dir: blog
   - search
   - rss:
       match_path: blog/posts/.* 
