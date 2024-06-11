@@ -39,6 +39,7 @@ theme:
         name: Switch to light mode
 nav:
   - index.md
-  - Java
+  - Java:
+    - '内存布局': java/java 内存结构.md
   - Blog:
     - blog/index.md
