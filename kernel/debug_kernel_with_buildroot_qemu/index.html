@@ -1,0 +1,1106 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://kicey.github.io/kernel/debug_kernel_with_buildroot_qemu/">
+      
+      
+      
+      
+        <link rel="alternate" type="application/rss+xml" title="RSS feed" href="../../feed_rss_created.xml">
+        <link rel="alternate" type="application/rss+xml" title="RSS feed of updated content" href="../../feed_rss_updated.xml">
+      
+      <link rel="icon" href="../../images/logo.svg">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.27">
+    
+    
+      
+        <title>使用 buildroot，qemu 调试 linux 内核 - kicey's blog</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6543a935.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#buildrootqemu-linux" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="kicey&#39;s blog" class="md-header__button md-logo" aria-label="kicey's blog" data-md-component="logo">
+      
+  <img src="../../images/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            kicey's blog
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              使用 buildroot，qemu 调试 linux 内核
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  kicey's blog
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../java/java%20%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/" class="md-tabs__link">
+          
+  
+    
+  
+  Java
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../react/4.%20funcion%20style%20component/" class="md-tabs__link">
+          
+  
+    
+  
+  React
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../blog/" class="md-tabs__link">
+          
+  
+    
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="kicey&#39;s blog" class="md-nav__button md-logo" aria-label="kicey's blog" data-md-component="logo">
+      
+  <img src="../../images/logo.svg" alt="logo">
+
+    </a>
+    kicey's blog
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    kicey's blog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Java
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Java
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../java/java%20%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    内存布局
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    React
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            React
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../react/4.%20funcion%20style%20component/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Function Style Component
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../blog/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Archive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            Archive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/archive/2024/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2024
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Categories
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Categories
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/category/hello-world/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Hello World
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      准备
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#buildroot-linux" class="md-nav__link">
+    <span class="md-ellipsis">
+      配置 buildroot 与 linux
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="配置 buildroot 与 linux">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#qemu" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用适用于构建 qemu 镜像的配置
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linux" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用本地 linux 源码
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      编译时添加符号信息
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      编译内核及根文件系统
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#qemu-gdb" class="md-nav__link">
+    <span class="md-ellipsis">
+      通过 qemu 运行内核，并做 gdb 的初步验证
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="通过 qemu 运行内核，并做 gdb 的初步验证">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#start-qemush" class="md-nav__link">
+    <span class="md-ellipsis">
+      修改 start-qemu.sh 启动脚本
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qemu-kernel" class="md-nav__link">
+    <span class="md-ellipsis">
+      启动 qemu 虚拟机 kernel
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gdb" class="md-nav__link">
+    <span class="md-ellipsis">
+      命令行启动 gdb
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vscode" class="md-nav__link">
+    <span class="md-ellipsis">
+      vscode 辅助调试
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="vscode 辅助调试">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vscode_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      配置 vscode 及插件
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      结语
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="buildrootqemu-linux">使用 buildroot，qemu 调试 linux 内核</h1>
+<h2 id="_1">准备</h2>
+<ul>
+<li>buildroot 源码（buildroot 刻意未以二进制的形式发布，详见：<a href="https://buildroot.org/downloads/manual/manual.html#faq-no-binary-packages">faq-no-binary-packages</a>）</li>
+<li>linux kernel 源码（建议使用 linux 的最新的 release 版本，不要使用 master，博客中使用 6.5 版本）</li>
+<li>qemu（运行 linux kernel 的虚拟机）</li>
+<li>gdb</li>
+<li>vs code</li>
+</ul>
+<h2 id="buildroot-linux">配置 buildroot 与 linux</h2>
+<p>buildroot 项目的目标是简化 linux 系统镜像的构建过程，因此 buildroot 默认使用 linux 官方仓库的代码构建 x86 平台的目标镜像。编译时也不生成调试需要的信息。</p>
+<p>所以我们需要先配置 buildroot，实现：</p>
+<ol>
+<li>使用适用于构建 qemu 镜像的配置</li>
+<li>使用本地的 linux 源码</li>
+<li>在编译时添加用于 debug 的符号信息</li>
+<li>相关的基础配置</li>
+</ol>
+<h3 id="qemu">使用适用于构建 qemu 镜像的配置</h3>
+<p>在 buildroot 的根目录下使用 <code>make qemu_x86_64_defconfig</code> 使用 x86_64 平台 qemu 的默认配置。</p>
+<h3 id="linux">使用本地 linux 源码</h3>
+<p>在 buildroot 的根目录下创建 <code>local.mk</code> 文件，添加内容 <code>LINUX_OVERRIDE_SRCDIR=${path_to_your_kernel_source_code}</code>，指定构建使用的源码。关于 <code>local.mk</code> 以及变量 <code>LINUX_OVERRIDE_SRCDIR</code> 的说明见：<a href="https://buildroot.org/downloads/manual/manual.html#_advanced_usage">Advanced usage</a>。</p>
+<p>buildroot 根目录下使用 <code>make menuconfig</code> 命令打开 buildroot 配置面板，如下。</p>
+<blockquote>
+<p>可以使用 <code>make help</code> 查看所有选项，需要注意的是 <code>make help</code> 并不是 make 本身的功能，这是一种规约，使用 help 作为一个 make 的 target，用于说明当前项目 make 使用的帮助文档。</p>
+</blockquote>
+<p><img alt="image-20240630170213875" src="../images/debug_kernel_with_buildroot_qemu/image-20240630170213875.png" /></p>
+<p>修改 Kernel -&gt; Kernel version，至源码当前的版本，注意配置界面的左上角，可以在此处看到配置界面的当前“路径”。</p>
+<p><img alt="image-20240630165901611" src="../images/debug_kernel_with_buildroot_qemu/image-20240630165901611.png" /></p>
+<p>修改 Toolchain -&gt; Custom kernel headers series 至源码相同的版本，buildroot 需要提前确定头文件的版本以正确的编译根文件系统。</p>
+<p><img alt="image-20240630165713864" src="../images/debug_kernel_with_buildroot_qemu/image-20240630165713864.png" /></p>
+<h3 id="_2">编译时添加符号信息</h3>
+<p>在 buildroot 使用 <code>make linux-menuconfig</code> 进入目标 linux 的配置界面，进入 Kernel hacking（名副其实😀），开启 debug 配置。</p>
+<p><img alt="image-20240630170015380" src="../images/debug_kernel_with_buildroot_qemu/image-20240630170015380.png" /></p>
+<p>选择正确的调试信息（默认无调试信息，选择默认 DWARF 版本的调试信息即可）</p>
+<p><img alt="image-20240630170134077" src="../images/debug_kernel_with_buildroot_qemu/image-20240630170134077.png" /></p>
+<p>暂停浏览 Kernel hacking 中的配置，会发现该配置界面中包含了众多配置选项，包含网络，驱动，内存等等。当前我们打开最基础的 debug 开关即可。</p>
+<h2 id="_3">编译内核及根文件系统</h2>
+<p>在 buildroot 根路径下使用 <code>make</code> 执行编译。</p>
+<p>编译结束之后：</p>
+<p>在 <code>./output/images</code> 中包含 kernel 和 rootfs 的镜像，以及 qemu 的启动脚本；</p>
+<blockquote>
+<p>图中包含了额外的 rootfs.ext4 是我个人配置时选择了 ext4 文件系统，仅调试不需要做这一步配置，流程一致。</p>
+</blockquote>
+<p><img alt="image-20240629012016088" src="../images/debug_kernel_with_buildroot_qemu/image-20240629012016088.png" /></p>
+<p>在 <code>./output/build/linux-custom</code> 中包含一个 <code>vmlinux</code> 文件，这是未压缩的原始内核镜像。使用 <code>objdump --debugging ./vmlinux</code> 命令验证其中包含 gdb 所需的 debug 符号信息（存在大量输出即可）。</p>
+<h2 id="qemu-gdb">通过 qemu 运行内核，并做 gdb 的初步验证</h2>
+<h3 id="start-qemush">修改 start-qemu.sh 启动脚本</h3>
+<p>在 qemu 的启动命令中加入 <code>-s</code> <code>-S</code> 两个选项；在 <code>-append</code> 选项的配置中加入 <code>nokaslr</code>，使 qemu 以调试的方式运行 kernel。qemu 会自动的启动 gdb server。</p>
+<h3 id="qemu-kernel">启动 qemu 虚拟机 kernel</h3>
+<p>进入 <code>./output/build/linux-custom</code> 路径，执行 <code>./start-qemu.sh</code>。将出现 </p>
+<pre><code>VNC server running on 127.0.0.1:5900
+</code></pre>
+<p>代表虚拟机启动成功，并且由于处于调试模式，暂停执行，如果在之后的 gdb 中选择继续执行，将可以看到登陆提示（如下）。</p>
+<p><img alt="image-20240630172556096" src="../images/debug_kernel_with_buildroot_qemu/image-20240630172556096.png" /></p>
+<p>需要注意的是，不熟悉 gdb 的开发者不易准确的判断调试命令对执行过程的影响，如果调试出现问题请回到站 qemu 窗口查看虚拟机状态，适时重启，重新开始调试。</p>
+<h3 id="gdb">命令行启动 gdb</h3>
+<ol>
+<li>
+<p>进入 <code>./output/build/linux-custom</code> 路径（任何路径均可，该路径更方便后续操作）；</p>
+</li>
+<li>
+<p>执行 <code>gdb ./vmlinux</code> 进入 gdb</p>
+</li>
+<li>
+<p>将得到一个警告：</p>
+</li>
+</ol>
+<p><code>bash
+   warning: File "/.../buildroot/output/build/linux-custom/scripts/gdb/vmlinux-gdb.py" auto-loading has been declined by your `auto-load safe-path' set to "$debugdir:$datadir/auto-load".</code></p>
+<ol>
+<li>
+<p>为了解决上一步中的警告，我们在 <code>./output/build/linux-custom</code> 下添加 <code>.gdbinit</code> 文件，加入以下内容 <code>add-auto-load-safe-path .</code>。
+   之后再次执行前 3 步，这个警告不再出现。</p>
+</li>
+<li>
+<p>执行 target remote localhost:1234 连接 qemu 中的 gdb server</p>
+</li>
+<li>
+<p>使用 <code>l</code> 查看当前执行的代码行，将看到以下结果
+   <img alt="image-20240630171727314" src="../images/debug_kernel_with_buildroot_qemu/image-20240630171727314.png" />
+   原因在于当前执行的代码属于 bootloader 的范畴，也就是还没有执行到 kernel 中的代码。</p>
+</li>
+<li>
+<p>添加断点 <code>b start_kernel</code>，是虚拟机在启动 kernel 时停止，结果如下
+   <img alt="image-20240630172002033" src="../images/debug_kernel_with_buildroot_qemu/image-20240630172002033.png" /></p>
+</li>
+<li>
+<p>使用 <code>continue</code> 执行到断点，然后使用 <code>l</code> 查看当前位置的代码，结果如下
+   <img alt="image-20240630172232801" src="../images/debug_kernel_with_buildroot_qemu/image-20240630172232801.png" /></p>
+</li>
+<li>
+<p>查看遇到的第一个变量 <code>init_task</code> （iscsi_task 结构体的一个引用）的值，</p>
+</li>
+</ol>
+<p>```c
+   struct iscsi_task {
+    /<em>
+     * Because LLDs allocate their hdr differently, this is a pointer
+     * and length to that storage. It must be setup at session
+     * creation time.
+     </em>/
+    struct iscsi_hdr    <em>hdr;
+    unsigned short      hdr_max;
+    unsigned short      hdr_len;    /</em> accumulated size of hdr used <em>/
+    /</em> copied values in case we need to send tmfs */
+    itt_t           hdr_itt;
+    __be32          cmdsn;
+    struct scsi_lun     lun;</p>
+<pre><code>int         itt;        /* this ITT */
+
+unsigned        imm_count;  /* imm-data (bytes)   */
+/* offset in unsolicited stream (bytes); */
+struct iscsi_r2t_info   unsol_r2t;
+char            *data;      /* mgmt payload */
+unsigned        data_count;
+struct scsi_cmnd    *sc;        /* associated SCSI cmd*/
+struct iscsi_conn   *conn;      /* used connection    */
+
+/* data processing tracking */
+unsigned long       last_xfer;
+unsigned long       last_timeout;
+bool            have_checked_conn;
+
+/* T10 protection information */
+bool            protected;
+
+/* state set/tested under session-&gt;lock */
+int         state;
+refcount_t      refcount;
+struct list_head    running;    /* running cmd list */
+void            *dd_data;   /* driver/transport data */
+</code></pre>
+<p>};
+   ```</p>
+<p>结果如下
+   <img alt="image-20240630173139974" src="../images/debug_kernel_with_buildroot_qemu/image-20240630173139974.png" /></p>
+<p>到此为止，linux kernel 的调试已经做到了，可以执行一下其他的 gdb 调试命令，比如下一步，添加断点，执行到断点，查看内存信息等。</p>
+<h2 id="vscode">vscode 辅助调试</h2>
+<h3 id="vscode_1">配置 vscode 及插件</h3>
+<ul>
+<li>
+<p>安装插件 Native Debug</p>
+</li>
+<li>
+<p>打开 linux 源码，注意版本，在项目路径下添加 <code>./vscode/launch.json</code> 文件，内容如下：
+  <code>json
+  {
+      "version": "0.2.0",
+      "configurations": [
+          {
+              "type": "gdb",
+              "request": "attach",
+              "name": "Attach to QEMU Kernel",
+              "executable": "/home/kicey/projects/open-source/buildroot/output/build/linux-custom/vmlinux",
+              "target": "localhost:1234",
+              "remote": true,
+              "cwd": "${workspaceRoot}",
+              "gdbpath": "/usr/bin/gdb",
+          }
+      ],
+      "postRemoteConnectCommands": [
+          {
+              "text": "source ${workspaceFolder}/.gdbinit"
+          }
+      ],
+  }</code></p>
+</li>
+</ul>
+<p>注意修改 <code>executable</code> 项到直接使用 gdb 调试时的 vmlinux。</p>
+<ul>
+<li>
+<p>在 linux 项目的路径下添加文件 <code>.gdbinit</code>，内容如下：
+  <code>bash
+  add-auto-load-safe-path /</code></p>
+</li>
+<li>
+<p>先在 <code>start_kernel</code> 函数处设置断点，再如手动调试时一样通过脚本启动 qemu kernel 虚拟机
+  <img alt="image-20240630174054575" src="../images/debug_kernel_with_buildroot_qemu/image-20240630174054575.png" />
+  最后连接调试（点左上角的绿色箭头）</p>
+</li>
+</ul>
+<p><img alt="image-20240630174300976" src="../images/debug_kernel_with_buildroot_qemu/image-20240630174300976.png" /></p>
+<p>可以看到，断点生效，变量查看生效
+  <img alt="image-20240630174509704" src="../images/debug_kernel_with_buildroot_qemu/image-20240630174509704.png" /></p>
+<h2 id="_4">结语</h2>
+<p>linux 内容的调试配置难度总体还算正常，特别是使用 buildroot 辅助的情况下。</p>
+<p>在可以进行内容调试之后，许多平常只能查阅别人描述的系统功能或行为，我们可以先找到对应的处理代码，然后调试验证了；从口说无凭到<strong>代码就是这么跑的！</strong>了（😀）。学习 linux 时更加的有的放矢，脚踏实地。</p>
+<p>在遇到一些奇怪的问题时（例如各个发行版的驱动适配，笑）也可以尝试自己解决。</p>
+<p>感谢阅读，如有问题，还请不吝赐教。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.tracking", "navigation.tabs", "navigation.path", "navigation.indexes", "navigation.top"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.ad660dcc.min.js"></script>
+      
+    
+  </body>
+</html>
