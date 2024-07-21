@@ -1,5 +1,13 @@
 site_name: kicey's blog
 site_url: https://kicey.github.io
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
 plugins:
   - blog:
       blog_dir: blog
@@ -24,6 +32,7 @@ theme:
     - navigation.path
     - navigation.indexes
     - navigation.top
+    - content.code.copy
   palette: 
 
     # Palette toggle for light mode
@@ -43,5 +52,7 @@ nav:
     - 内存布局: java/java 内存结构.md
   - React:
     - Function Style Component: react/4. funcion style component.md
+  - Kernel:
+    - "使用 buildroot 和 QEMU 调试 linux 内核": kernel/debug_kernel_with_buildroot_qemu.md
   - Blog:
     - blog/index.md
