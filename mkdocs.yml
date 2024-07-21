@@ -49,7 +49,8 @@ theme:
 nav:
   - index.md
   - Java:
-    - 内存布局: java/java 内存结构.md
+    - 内存布局: java/java 内存布局.md
+    - Hotspot 垃圾收集器关键特性: java/Hotspot 垃圾收集器关键特性.md
   - React:
     - Function Style Component: react/4. funcion style component.md
   - Kernel:
