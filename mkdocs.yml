@@ -56,5 +56,7 @@ nav:
     - Function Style Component: react/4. funcion style component.md
   - Kernel:
     - "使用 buildroot 和 QEMU 调试 linux 内核": kernel/debug_kernel_with_buildroot_qemu.md
+  - Redis:
+    - "Simple Dynamic String": redis/simple_dynamic_string.md
   - Blog:
     - blog/index.md
