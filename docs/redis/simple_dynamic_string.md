@@ -54,4 +54,5 @@ redis 中的 sds 没有图中的 pad 部分 8 bit 的 flag 后直接是 buf 数�
 参考内容：
 
 [要懂redis，首先得看懂sds](https://juejin.cn/post/6888592403301662728)
+
 [简单动态字符串 — Redis 设计与实现](https://redisbook.readthedocs.io/en/latest/internal-datastruct/sds.html)
