@@ -1,3 +1,7 @@
+---
+date: 2025-06-04 
+---
+
 # Fix the Electron Fiddle issue about user namespace privileges on ubuntu 24.04
 
 If you install Electron Fiddle on Ubuntu 24.04. Then want to run a Fiddle, you will get errors like 
