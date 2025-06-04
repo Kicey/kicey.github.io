@@ -11,6 +11,7 @@ markdown_extensions:
 plugins:
   - blog:
       blog_dir: blog
+      post_readtime: false
   - search
   - rss:
       match_path: blog/posts/.* 
