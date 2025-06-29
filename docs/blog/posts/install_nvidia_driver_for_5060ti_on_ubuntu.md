@@ -171,7 +171,7 @@ For developers using Docker, you'll want to enable your containers to access the
 
 By following these steps, you should have successfully installed the latest NVIDIA driver and CUDA Toolkit on your Ubuntu system, enabling your newer GPU for development and computation. You've also set up Docker to seamlessly leverage your GPU within containers.
 
-## Refreences
+## References
 
 * https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu&target_version=24.04&target_type=deb_network
 * https://forums.developer.nvidia.com/t/we-would-like-to-know-when-the-nvidia-drivers-for-5060ti-on-ubuntu-will-be-released/331207
