@@ -30,6 +30,9 @@ sudo apt upgrade -y
 You might also want to ensure you have the necessary kernel headers and necessary packages for build is  installed, as they are crucial for driver compilation:
 
 ```bash
+sudo apt update
+sudo apt install gcc
+sudo apt install make
 sudo apt install linux-headers-$(uname -r) -y
 ```
 
