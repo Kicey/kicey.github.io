@@ -1,0 +1,5 @@
+{
+  "name": "kicey-docs",
+  "image": "mcr.microsoft.com/devcontainers/python:1-3.12-bookworm",
+  "postCreateCommand": "pip config set global.index-url https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple && pip install --no-cache-dir mkdocs-material mkdocs-rss-plugin"
+}
