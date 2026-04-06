@@ -1,5 +1,13 @@
-.idea
-.vscode
+# IDE settings
+.idea/
+.vscode/
 
-/venv
-/site
+# Python virtual environments
+/venv/
+/.venv/
+
+# Generated site output
+/site/
+
+# Local assets and exports
+/assets/
