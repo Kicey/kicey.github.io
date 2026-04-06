@@ -12,6 +12,8 @@ plugins:
   - blog:
       blog_dir: blog
       post_readtime: false
+      post_excerpt: required
+      post_excerpt_separator: "<!-- more -->"
   - search
   - rss:
       match_path: blog/posts/.* 

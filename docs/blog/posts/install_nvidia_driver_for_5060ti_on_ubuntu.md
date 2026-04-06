@@ -4,6 +4,8 @@ date: 2025-06-29
 
 # Installing NVIDIA Driver CUDA Toolkit on Ubuntu for Newer GPUs (e.g. 5060 Ti)
 
+<!-- more -->
+
 Hello everyone! If you've recently upgraded to a newer NVIDIA GPU, like the powerful 5060 Ti, and are running Ubuntu 24.04 or later, you might have run into issues installing the latest drivers and CUDA Toolkit directly from the standard Ubuntu repositories. This is often because newer hardware requires more up-to-date drivers than what's typically available in the default package sources.
 
 This blog post will guide you through the process of installing the NVIDIA driver (specifically version 575 or newer) and CUDA Toolkit (version 12.8 or newer) by utilizing the official NVIDIA-maintained repositories. This method ensures you get the latest compatible software and allows for easier future updates.

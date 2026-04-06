@@ -4,6 +4,8 @@ date: 2025-06-04
 
 # Fix the Electron Fiddle issue about user namespace privileges on ubuntu 24.04
 
+<!-- more -->
+
 If you install Electron Fiddle on Ubuntu 24.04. Then want to run a Fiddle, you will get errors like 
 ```
 The SUID sandbox helper binary was found, but is not configured correctly. Rather than run without sandboxing I'm aborting now. You need to make sure that /home/aadcg/.config/Electron Fiddle/electron-bin/current/chrome-sandbox is owned by root and has mode 4755.

@@ -4,6 +4,8 @@ date: 2026-04-06
 
 # Proxmox GPU 直通实战教程（AMD Ryzen 9 7950X + NVIDIA RTX 5060 Ti）
 
+<!-- more -->
+
 这篇文章整理自一次完整的排障聊天记录，目标环境如下：
 
 - 宿主机：Proxmox VE（AMD 平台）
