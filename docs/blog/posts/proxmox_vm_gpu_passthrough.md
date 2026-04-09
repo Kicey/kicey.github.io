@@ -1,5 +1,6 @@
 ---
 date: 2026-04-06
+summary: Step-by-step AMD + NVIDIA GPU passthrough setup on Proxmox, including BIOS, IOMMU, VFIO binding, and VM PCI attachment checks.
 ---
 
 # Proxmox GPU Passthrough Tutorial (AMD Ryzen 9 7950X + NVIDIA RTX 5060 Ti)

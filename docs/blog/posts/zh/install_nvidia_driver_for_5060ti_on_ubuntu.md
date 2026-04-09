@@ -1,5 +1,6 @@
 ---
 date: 2025-06-29 
+summary: 介绍如何在 Ubuntu 上通过 NVIDIA 官方源安装适配 50 系显卡的驱动与 CUDA Toolkit，并处理 Secure Boot 场景。
 ---
 
 # 在 Ubuntu 上为新一代显卡（如 5060 Ti）安装 NVIDIA 驱动和 CUDA Toolkit

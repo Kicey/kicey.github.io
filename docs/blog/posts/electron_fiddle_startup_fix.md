@@ -1,5 +1,6 @@
 ---
 date: 2025-06-04 
+summary: Fix Electron Fiddle launch failures on Ubuntu 24.04 by adding an AppArmor profile that grants required user namespace permissions.
 ---
 
 # Fix the Electron Fiddle issue about user namespace privileges on ubuntu 24.04

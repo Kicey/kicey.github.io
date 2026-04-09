@@ -1,5 +1,6 @@
 ---
 date: 2025-06-29 
+summary: How to install recent NVIDIA drivers and CUDA Toolkit on Ubuntu for newer GPUs like RTX 5060 Ti, including secure boot notes.
 ---
 
 # Installing NVIDIA Driver CUDA Toolkit on Ubuntu for Newer GPUs (e.g. 5060 Ti)

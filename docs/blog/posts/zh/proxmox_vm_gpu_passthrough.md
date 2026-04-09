@@ -1,5 +1,6 @@
 ---
 date: 2026-04-06
+summary: 一篇完整的 Proxmox GPU 直通实战记录，覆盖 BIOS 设置、IOMMU 验证、VFIO 绑定以及虚拟机侧的挂载与排障。
 ---
 
 # Proxmox GPU 直通实战教程（AMD Ryzen 9 7950X + NVIDIA RTX 5060 Ti）
