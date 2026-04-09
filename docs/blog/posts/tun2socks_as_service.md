@@ -5,6 +5,8 @@ summary: A practical tun2socks setup on an Ubuntu Proxmox VM, including safe rou
 
 # Run tun2socks as a systemd Service on Proxmox VM (Ubuntu 24.04, IPv4 + IPv6)
 
+<!-- more -->
+
 This post is a cleaned-up tutorial from a full command rehearsal.
 
 Environment used in rehearsal:
