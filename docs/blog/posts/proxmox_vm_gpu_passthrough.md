@@ -19,6 +19,45 @@ If you are on a similar AM5 + NVIDIA setup, this walkthrough should map very clo
 
 ------
 
+## Technology Stack Behind This Tutorial
+
+This guide touches multiple layers of the virtualization stack. Understanding these layers makes troubleshooting much easier:
+
+1. Firmware layer (UEFI/BIOS)
+	- `SVM` (AMD-V) enables CPU virtualization extensions.
+	- `IOMMU` (AMD-Vi) enables DMA remapping and device isolation.
+	- UEFI mode avoids legacy initialization behavior that can interfere with modern GPU passthrough.
+
+2. Hypervisor layer (Proxmox VE)
+	- Proxmox is the management layer; actual VM acceleration is provided by Linux `KVM` and device emulation by `QEMU`.
+	- GPU passthrough means QEMU exposes a real PCIe device directly to the guest, instead of emulating a virtual GPU.
+
+3. Isolation layer (Linux IOMMU groups)
+	- `IOMMU` = `Input-Output Memory Management Unit`.
+	- The kernel groups PCI devices by isolation boundaries.
+	- Passthrough is safe/reliable only when devices are in proper IOMMU groups.
+
+4. Driver binding layer (VFIO)
+	- `VFIO` = `Virtual Function I/O`.
+	- `vfio` (VFIO core framework), `vfio_iommu_type1` (Type-1 IOMMU backend), `vfio_pci` (PCI device binding driver), and `vfio_virqfd` (virtual interrupt eventfd support) allow userspace VMs to own PCI devices securely.
+	- Binding the GPU to `vfio-pci` prevents host graphics drivers from taking the card first.
+
+5. Boot and module orchestration layer
+	- GRUB injects kernel flags (`amd_iommu=on iommu=pt`).
+	- `initramfs` ensures required modules and binding logic are available early during boot.
+	- `/etc/modules-load.d/` controls module auto-load; `/etc/modprobe.d/` controls module options and blacklists.
+
+6. Guest VM platform layer
+	- `OVMF (UEFI)` + `q35` gives a modern virtual platform aligned with PCIe passthrough.
+	- `CPU type: host` exposes native CPU features.
+	- Disabling memory ballooning avoids DMA-related instability for passthrough workloads.
+
+7. Verification toolchain
+	- `dmesg`, `/proc/cmdline`, `find /sys/kernel/iommu_groups`, and `lspci -nnk` validate host readiness.
+	- `nvidia-smi` validates the guest-side driver and runtime state.
+
+------
+
 ## 1. What Success Looks Like
 
 Before details, here is the expected end state:
@@ -55,6 +94,12 @@ Inside AMD CBS, set:
 - `IOMMU` -> `Enabled`
 
 Use explicit `Enabled` instead of `Auto` for passthrough reliability.
+
+Under the hood:
+
+- `SVM` enables hardware-assisted virtualization instructions used by KVM.
+- `IOMMU` enables DMA remapping, which is the foundation for safe PCIe passthrough.
+- If either is missing, VFIO can load but device assignment will typically fail or be unstable.
 
 ![img03_amd_cbs_cpu_options](images/proxmox_vm_gpu_passthrough/2026-04-06T10:52:07.465Z-image.png)
 
@@ -120,6 +165,12 @@ Set:
 GRUB_CMDLINE_LINUX_DEFAULT="quiet amd_iommu=on iommu=pt"
 ```
 
+Why these flags matter:
+
+- `amd_iommu=on`: explicitly enables AMD IOMMU support in kernel boot path.
+- `iommu=pt`: keeps host-side overhead lower for non-assigned devices by using pass-through mappings where possible.
+- Without correct boot flags, BIOS settings alone may not produce usable runtime isolation.
+
 Apply and reboot:
 
 ```bash
@@ -151,11 +202,19 @@ find /sys/kernel/iommu_groups/ -type l | head
 
 If `/sys/kernel/iommu_groups/` exists and contains entries, IOMMU is active.
 
+This is a key architectural checkpoint: IOMMU groups are the kernel's isolation model, and VFIO relies on this model to guarantee a device can be safely handed to a VM.
+
 ------
 
 ## 4. Load VFIO Modules at Boot
 
 Historically people edited `/etc/modules`, but on systemd-based systems the cleaner way is a dedicated file in `/etc/modules-load.d/`.
+
+Stack detail:
+
+- `/etc/modules-load.d/*.conf` controls which kernel modules are loaded at boot.
+- `/etc/modprobe.d/*.conf` controls module parameters (for example, VFIO device IDs) and blacklists.
+- Keeping loading and policy in separate files makes maintenance and debugging clearer.
 
 Create:
 
@@ -222,6 +281,11 @@ Add:
 options vfio-pci ids=10de:2d04,10de:22eb disable_vga=1
 ```
 
+What this does:
+
+- `ids=...` tells VFIO exactly which PCI functions to claim (GPU + HDMI/DP audio).
+- `disable_vga=1` helps avoid legacy VGA routing conflicts on some boards/firmware combinations.
+
 ### Step 11: Blacklist Host NVIDIA Drivers
 
 Create:
@@ -241,6 +305,8 @@ Notes:
 
 - Do not blacklist `amdgpu` (host iGPU needs it).
 - `blacklist radeon` is optional and usually unnecessary on modern Ryzen iGPU setups.
+
+The binding order is critical: if `nouveau`/`nvidia` binds first, VFIO cannot cleanly claim the device later without manual unbind/rebind.
 
 Apply and reboot:
 
@@ -283,6 +349,12 @@ Recommended wizard settings:
 	- Disable ballooning
 5. Network:
 	- `VirtIO`
+
+Why this VM stack is recommended:
+
+- `OVMF` matches modern GPU firmware expectations and guest driver behavior.
+- `q35` models a PCIe-first chipset, which is a better fit for passthrough than legacy `i440fx`.
+- `VirtIO` keeps paravirtualized devices efficient so CPU/GPU resources are focused on real workloads.
 
 Then add PCI device:
 
