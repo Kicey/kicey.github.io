@@ -24,37 +24,37 @@ summary: 一篇完整的 Proxmox GPU 直连实战记录，覆盖 BIOS 设置、I
 这篇教程不仅是操作步骤，还涉及多层虚拟化与内核机制。理解这些层次会让排障更高效：
 
 1. 固件层（UEFI/BIOS）
-   - `SVM`（AMD-V）负责开启 CPU 硬件虚拟化扩展。
-   - `IOMMU`（AMD-Vi）负责 DMA 重映射与设备隔离。
-   - 使用 UEFI 模式可避免部分 Legacy 初始化行为对 GPU 直连产生干扰。
+	- `SVM`（AMD-V）负责开启 CPU 硬件虚拟化扩展。
+	- `IOMMU`（AMD-Vi）负责 DMA 重映射与设备隔离。
+	- 使用 UEFI 模式可避免部分 Legacy 初始化行为对 GPU 直连产生干扰。
 
 2. 虚拟化平台层（Proxmox VE）
-   - Proxmox 是管理层，真正的虚拟化加速由 Linux `KVM` 完成，设备模型由 `QEMU` 提供。
-   - GPU 直连本质是让 QEMU 把真实 PCIe 设备直接交给客户机，而不是使用虚拟显卡。
+	- Proxmox 是管理层，真正的虚拟化加速由 Linux `KVM` 完成，设备模型由 `QEMU` 提供。
+	- GPU 直连本质是让 QEMU 把真实 PCIe 设备直接交给客户机，而不是使用虚拟显卡。
 
 3. 隔离层（Linux IOMMU 分组）
-   - `IOMMU` 的全称是 `Input-Output Memory Management Unit`。
-   - 内核会按隔离边界把 PCI 设备划分为 IOMMU groups。
-   - 只有分组隔离合理，直连才安全且稳定。
+	- `IOMMU` 的全称是 `Input-Output Memory Management Unit`。
+	- 内核会按隔离边界把 PCI 设备划分为 IOMMU groups。
+	- 只有分组隔离合理，直连才安全且稳定。
 
 4. 设备绑定层（VFIO）
-   - `VFIO` 的全称是 `Virtual Function I/O`。
-   - `vfio`（VFIO 核心框架）、`vfio_iommu_type1`（Type-1 IOMMU 后端）、`vfio_pci`（PCI 设备绑定驱动）、`vfio_virqfd`（虚拟中断 eventfd 支持）共同构成用户态虚拟机直连链路。
-   - 把显卡绑定到 `vfio-pci` 的目的是阻止宿主机图形驱动抢先占用设备。
+	- `VFIO` 的全称是 `Virtual Function I/O`。
+	- `vfio`（VFIO 核心框架）、`vfio_iommu_type1`（Type-1 IOMMU 后端）、`vfio_pci`（PCI 设备绑定驱动）、`vfio_virqfd`（虚拟中断 eventfd 支持）共同构成用户态虚拟机直连链路。
+	- 把显卡绑定到 `vfio-pci` 的目的是阻止宿主机图形驱动抢先占用设备。
 
 5. 引导与模块编排层
-   - GRUB 注入内核参数（`amd_iommu=on iommu=pt`）。
-   - `initramfs` 保证关键模块和绑定策略在早期启动阶段就可用。
-   - `/etc/modules-load.d/` 管理模块自动加载，`/etc/modprobe.d/` 管理模块参数与黑名单策略。
+	- GRUB 注入内核参数（`amd_iommu=on iommu=pt`）。
+	- `initramfs` 保证关键模块和绑定策略在早期启动阶段就可用。
+	- `/etc/modules-load.d/` 管理模块自动加载，`/etc/modprobe.d/` 管理模块参数与黑名单策略。
 
 6. 虚拟机硬件配置层
-   - `OVMF (UEFI)` + `q35` 提供更贴近现代 PCIe 设备的虚拟平台。
-   - `CPU type: host` 暴露更多原生 CPU 特性。
-   - 关闭 ballooning 可降低直连场景中的 DMA 稳定性风险。
+	- `OVMF (UEFI)` + `q35` 提供更贴近现代 PCIe 设备的虚拟平台。
+	- `CPU type: host` 暴露更多原生 CPU 特性。
+	- 关闭 ballooning 可降低直连场景中的 DMA 稳定性风险。
 
 7. 验证工具链
-   - `dmesg`、`/proc/cmdline`、`find /sys/kernel/iommu_groups`、`lspci -nnk` 用于宿主机侧状态确认。
-   - `nvidia-smi` 用于客户机侧驱动与运行状态确认。
+	- `dmesg`、`/proc/cmdline`、`find /sys/kernel/iommu_groups`、`lspci -nnk` 用于宿主机侧状态确认。
+	- `nvidia-smi` 用于客户机侧驱动与运行状态确认。
 
 ------
 
