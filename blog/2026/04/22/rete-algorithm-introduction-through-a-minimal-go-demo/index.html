@@ -1,0 +1,1398 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://kicey.github.io/blog/2026/04/22/rete-algorithm-introduction-through-a-minimal-go-demo/">
+      
+      
+        <link rel="prev" href="../%E9%80%9A%E8%BF%87%E4%B8%80%E4%B8%AA%E6%9C%80%E5%B0%8F-go-demo-%E7%90%86%E8%A7%A3-rete-%E7%AE%97%E6%B3%95/">
+      
+      
+      
+        
+      
+      
+        <link rel="alternate" type="application/rss+xml" title="RSS feed" href="../../../../../feed_rss_created.xml">
+        <link rel="alternate" type="application/rss+xml" title="RSS feed of updated content" href="../../../../../feed_rss_updated.xml">
+      
+      <link rel="icon" href="../../../../../images/logo.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Rete Algorithm Introduction Through a Minimal Go Demo - kicey's blog</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="google-site-verification" content="DaC7Ld_kS4qO1e4AxtoweuGG-EHZ7dTyKh2B-aPQokc" />
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#rete-algorithm-introduction-through-a-minimal-go-demo" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../../.." title="kicey&#39;s blog" class="md-header__button md-logo" aria-label="kicey's blog" data-md-component="logo">
+      
+  <img src="../../../../../images/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            kicey's blog
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Rete Algorithm Introduction Through a Minimal Go Demo
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../../../.." class="md-tabs__link">
+          
+  
+  
+    
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../../java/java%20%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Java
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../../react/4.%20funcion%20style%20component/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  React
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../../kernel/debug_kernel_with_buildroot_qemu/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Kernel
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../../redis/simple_dynamic_string/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Redis
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../.." title="kicey&#39;s blog" class="md-nav__button md-logo" aria-label="kicey's blog" data-md-component="logo">
+      
+  <img src="../../../../../images/logo.svg" alt="logo">
+
+    </a>
+    kicey's blog
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../.." class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Blog
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Blog
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_2" id="__nav_1_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archive
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Archive
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../archive/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../archive/2025/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Java
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../java/java%20%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    内存布局
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../java/Hotspot%20GC%20%E7%89%B9%E6%80%A7/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hotspot GC 特性
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    React
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../react/4.%20funcion%20style%20component/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Function Style Component
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Kernel
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../kernel/debug_kernel_with_buildroot_qemu/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    使用 buildroot 和 QEMU 调试 linux 内核
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Redis
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Redis
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../redis/simple_dynamic_string/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Simple Dynamic String
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-rule-set-used-in-the-demo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The Rule Set Used in the Demo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-network-shape-what-gets-built-once" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Network Shape (What Gets Built Once)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-how-facts-are-processed-on-the-rule-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. How Facts Are Processed on the Rule Set
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. How Facts Are Processed on the Rule Set">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-a-assert-accountidjoe123-rewardmiles150000-statusunknown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step A: Assert Account{ID:Joe123, RewardMiles:150000, Status:Unknown}
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-b-assert-flightmiles2419-categoryeconomy-airlineoriginal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step B: Assert Flight{Miles:2419, Category:Economy, Airline:Original}
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-why-memory-makes-rete-efficient" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Why Memory Makes Rete Efficient
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Why Memory Makes Rete Efficient">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-structural-sharing-one-test-many-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Structural sharing: one test, many rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-temporal-reuse-only-process-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Temporal reuse: only process changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-incremental-joins-with-cached-sides" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Incremental joins with cached sides
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-tradeoff-memory-for-speed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Tradeoff: memory for speed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-a-compact-mental-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. A Compact Mental Model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-what-this-demo-simplifies-still-useful" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. What This Demo Simplifies (Still Useful)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../../../.." class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+                  <span class="md-ellipsis">
+                    Back to index
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    Metadata
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5z"/></svg>
+                        <time datetime="2026-04-22 00:00:00+00:00" class="md-ellipsis">April 22, 2026</time>
+                      </div>
+                    </li>
+                    
+                    
+                    
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+            
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+  
+
+
+
+
+<h1 id="rete-algorithm-introduction-through-a-minimal-go-demo">Rete Algorithm Introduction Through a Minimal Go Demo</h1>
+<!-- more -->
+
+<p>This post explains the Rete algorithm through a small Go implementation in <a href="https://github.com/Kicey/rete-algorithm-demo">Kicey/rete-algorithm-demo</a>. The goal is to make Rete less abstract by following one concrete runtime trace.</p>
+<p>I focus on two questions:</p>
+<ol>
+<li>How does Rete process facts on a rule set?</li>
+<li>Why is it efficient with node memory?</li>
+</ol>
+<p>The demo is intentionally small, but it still shows the core ideas from classic Rete writeups:</p>
+<ul>
+<li>A discrimination network (type and single-fact condition filtering)</li>
+<li>Join nodes for cross-fact matching</li>
+<li>Memory on alpha and beta sides to avoid repeated full scans</li>
+</ul>
+<hr />
+<h2 id="1-the-rule-set-used-in-the-demo">1. The Rule Set Used in the Demo</h2>
+<p>The sample domain is airline rewards with two fact types:</p>
+<ul>
+<li><code>Account</code></li>
+<li><code>Flight</code></li>
+</ul>
+<p>Three rules are modeled:</p>
+<ol>
+<li>If <code>Account.RewardMiles &gt; 100000</code>, assign Gold status.</li>
+<li>If <code>Flight.Miles &gt;= 500</code>, reward flight miles.</li>
+<li>If account is Gold and flight airline is not partner, reward 100% bonus miles.</li>
+</ol>
+<p>In the code, rule 3 is represented as a join between:</p>
+<ul>
+<li>Left side: accounts that passed the Gold-related alpha condition</li>
+<li>Right side: flights that passed <code>Flight.Airline != "Partner"</code></li>
+</ul>
+<hr />
+<h2 id="2-network-shape-what-gets-built-once">2. Network Shape (What Gets Built Once)</h2>
+<p>The demo constructs the network at startup (<code>main.go</code>) and runs facts through it (<code>rete.go</code>):</p>
+<ol>
+<li><code>ReteNode</code> root receives all asserted facts.</li>
+<li><code>ObjectTypeNode</code> branches by Go type (<code>Account</code> vs <code>Flight</code>).</li>
+<li><code>AlphaNode</code> checks single-fact conditions (for example <code>Miles &gt;= 500</code>).</li>
+<li><code>AlphaMemory</code> stores matched facts and forwards them.</li>
+<li><code>BetaNode</code> joins left tuples with right facts.</li>
+<li><code>BetaMemory</code> stores left facts, right facts, and joined tuples.</li>
+<li><code>TerminalNode</code> executes actions when a rule is fully matched.</li>
+</ol>
+<p>This directly mirrors the alpha-network + beta-network separation described in the two referenced articles.</p>
+<hr />
+<h2 id="3-how-facts-are-processed-on-the-rule-set">3. How Facts Are Processed on the Rule Set</h2>
+<p>Now follow the runtime log step by step.</p>
+<h3 id="step-a-assert-accountidjoe123-rewardmiles150000-statusunknown">Step A: Assert <code>Account{ID:Joe123, RewardMiles:150000, Status:Unknown}</code></h3>
+<p>The log shows this path:</p>
+<ol>
+<li>Root receives the account fact.</li>
+<li><code>ObjectTypeNode(Account)</code> matches type.</li>
+<li>Alpha condition <code>Account.RewardMiles &gt; 100000</code> passes.</li>
+<li><code>AlphaMemory</code> stores the account fact.</li>
+<li>Terminal for "Assign Gold Status" fires.</li>
+<li>The same matched account is also sent to the join's left input (<code>BetaNode-LeftActivate</code>).</li>
+</ol>
+<p>Important detail: after this step, there is still no joined rule firing yet, because the right-side flight fact for the join has not arrived.</p>
+<h3 id="step-b-assert-flightmiles2419-categoryeconomy-airlineoriginal">Step B: Assert <code>Flight{Miles:2419, Category:Economy, Airline:Original}</code></h3>
+<p>The log then shows two independent alpha matches on the flight branch:</p>
+<ol>
+<li><code>Flight.Miles &gt;= 500</code> passes.</li>
+<li>Terminal for "Reward Flight Miles" fires.</li>
+<li><code>Flight.Airline != Partner</code> also passes.</li>
+<li>That fact is stored and sent to join right input (<code>BetaNode-RightActivate</code>).</li>
+</ol>
+<p>Now the join can complete:</p>
+<ol>
+<li><code>BetaNode</code> checks right fact against cached left facts.</li>
+<li>A joined tuple <code>[Account, Flight]</code> is produced.</li>
+<li><code>BetaMemory</code> stores that tuple.</li>
+<li>Terminal for "+100% Bonus Miles for Gold Status" fires.</li>
+</ol>
+<p>So in one runtime cycle with two assertions, the engine executes:</p>
+<ul>
+<li>Gold assignment</li>
+<li>Flight miles reward</li>
+<li>Gold bonus reward</li>
+</ul>
+<p>without manually re-checking every rule from scratch.</p>
+<hr />
+<h2 id="4-why-memory-makes-rete-efficient">4. Why Memory Makes Rete Efficient</h2>
+<p>The speedup is mainly from remembering partial work.</p>
+<h3 id="41-structural-sharing-one-test-many-rules">4.1 Structural sharing: one test, many rules</h3>
+<p>The same alpha result (<code>Account.RewardMiles &gt; 100000</code>) is reused:</p>
+<ul>
+<li>once for direct Gold assignment</li>
+<li>once as left input to the Gold+Flight join</li>
+</ul>
+<p>Without a network, duplicated condition checks are common as rule count grows.</p>
+<h3 id="42-temporal-reuse-only-process-changes">4.2 Temporal reuse: only process changes</h3>
+<p>When a new fact arrives, only relevant nodes are visited:</p>
+<ul>
+<li>Account fact never goes through flight alpha checks</li>
+<li>Flight fact never goes through account alpha checks</li>
+</ul>
+<p><code>ObjectTypeNode</code> and alpha memories prevent unrelated recomputation.</p>
+<h3 id="43-incremental-joins-with-cached-sides">4.3 Incremental joins with cached sides</h3>
+<p><code>BetaMemory</code> caches:</p>
+<ul>
+<li><code>LeftFacts</code></li>
+<li><code>RightFacts</code></li>
+<li><code>Joined</code></li>
+</ul>
+<p>So when one side changes, the engine only combines the new/changed side with the cached opposite side, instead of recomputing all pairings from zero.</p>
+<h3 id="44-tradeoff-memory-for-speed">4.4 Tradeoff: memory for speed</h3>
+<p>Rete pays extra memory to store matched and partially matched states. This is exactly the classic tradeoff highlighted in Rete literature: higher memory usage, much faster repeated matching on evolving fact sets.</p>
+<hr />
+<h2 id="5-a-compact-mental-model">5. A Compact Mental Model</h2>
+<p>You can think of this demo as:</p>
+<ul>
+<li>Alpha network answers: "Which individual facts satisfy which simple predicates?"</li>
+<li>Beta network answers: "Which combinations of already-matched facts satisfy cross-fact predicates?"</li>
+<li>Memories answer: "What have we already proven so we do not prove it again?"</li>
+</ul>
+<p>That last point is the heart of Rete efficiency.</p>
+<hr />
+<h2 id="6-what-this-demo-simplifies-still-useful">6. What This Demo Simplifies (Still Useful)</h2>
+<p>This implementation is intentionally minimal:</p>
+<ul>
+<li>It executes actions immediately instead of using a full agenda/conflict-resolution strategy.</li>
+<li>Its join condition in the sample always returns true after alpha filtering (real engines often join on business keys, such as account id).</li>
+<li>It demonstrates insertion/assertion flow only.</li>
+</ul>
+<p>Even with these simplifications, it clearly shows the two core Rete ideas:</p>
+<ol>
+<li>Facts propagate through a prebuilt network of tests.</li>
+<li>Node memories make matching incremental and fast.</li>
+</ol>
+<hr />
+<h2 id="references">References</h2>
+<ul>
+<li>Repository: https://github.com/Kicey/rete-algorithm-demo</li>
+<li>README reference article 1: https://community.sap.com/t5/technology-blog-posts-by-sap/introduction-to-the-rete-algorithm/ba-p/13534504</li>
+<li>README reference article 2: https://www.sparklinglogic.com/rete-algorithm-demystified-part-2/</li>
+<li>Runtime trace used in this post: output log provided in this workspace discussion.</li>
+</ul>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+  
+
+
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.tracking", "navigation.tabs", "navigation.path", "navigation.indexes", "navigation.top", "content.code.copy"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

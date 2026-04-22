@@ -1,0 +1,1668 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://kicey.github.io/blog/2026/04/06/proxmox-gpu-passthrough-tutorial-amd-ryzen-9-7950x--nvidia-rtx-5060-ti/">
+      
+      
+        <link rel="prev" href="../proxmox-gpu-%E7%9B%B4%E9%80%9A%E5%AE%9E%E6%88%98%E6%95%99%E7%A8%8Bamd-ryzen-9-7950x--nvidia-rtx-5060-ti/">
+      
+      
+        <link rel="next" href="../../09/run-tun2socks-as-a-systemd-service-on-proxmox-vm-ubuntu-2404-ipv4--ipv6/">
+      
+      
+        
+      
+      
+        <link rel="alternate" type="application/rss+xml" title="RSS feed" href="../../../../../feed_rss_created.xml">
+        <link rel="alternate" type="application/rss+xml" title="RSS feed of updated content" href="../../../../../feed_rss_updated.xml">
+      
+      <link rel="icon" href="../../../../../images/logo.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Proxmox GPU Passthrough Tutorial (AMD Ryzen 9 7950X + NVIDIA RTX 5060 Ti) - kicey's blog</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="google-site-verification" content="DaC7Ld_kS4qO1e4AxtoweuGG-EHZ7dTyKh2B-aPQokc" />
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#proxmox-gpu-passthrough-tutorial-amd-ryzen-9-7950x-nvidia-rtx-5060-ti" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../../.." title="kicey&#39;s blog" class="md-header__button md-logo" aria-label="kicey's blog" data-md-component="logo">
+      
+  <img src="../../../../../images/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            kicey's blog
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Proxmox GPU Passthrough Tutorial (AMD Ryzen 9 7950X + NVIDIA RTX 5060 Ti)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../../../.." class="md-tabs__link">
+          
+  
+  
+    
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../../java/java%20%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Java
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../../react/4.%20funcion%20style%20component/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  React
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../../kernel/debug_kernel_with_buildroot_qemu/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Kernel
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../../redis/simple_dynamic_string/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Redis
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../.." title="kicey&#39;s blog" class="md-nav__button md-logo" aria-label="kicey's blog" data-md-component="logo">
+      
+  <img src="../../../../../images/logo.svg" alt="logo">
+
+    </a>
+    kicey's blog
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../.." class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Blog
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Blog
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_2" id="__nav_1_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archive
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Archive
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../archive/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../archive/2025/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2025
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Java
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../java/java%20%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    内存布局
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../java/Hotspot%20GC%20%E7%89%B9%E6%80%A7/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hotspot GC 特性
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    React
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../react/4.%20funcion%20style%20component/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Function Style Component
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Kernel
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../kernel/debug_kernel_with_buildroot_qemu/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    使用 buildroot 和 QEMU 调试 linux 内核
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Redis
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Redis
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../redis/simple_dynamic_string/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Simple Dynamic String
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#technology-stack-behind-this-tutorial" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technology Stack Behind This Tutorial
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-success-looks-like" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What Success Looks Like
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-bios-configuration-msi-click-bios-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. BIOS Configuration (MSI Click BIOS 5)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. BIOS Configuration (MSI Click BIOS 5)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-enter-advanced-bios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Enter Advanced BIOS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-navigate-to-amd-cbs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Navigate to AMD CBS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-enable-virtualization-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Enable Virtualization Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-optional-stability-tweak" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Optional Stability Tweak
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-confirm-boot-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Confirm Boot Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-verify-and-enable-iommu-in-proxmox" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Verify and Enable IOMMU in Proxmox
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Verify and Enable IOMMU in Proxmox">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-6-first-check-in-host-shell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: First Check in Host Shell
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-add-kernel-parameters-grub" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7: Add Kernel Parameters (GRUB)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-8-verify-iommu-groups-exist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8: Verify IOMMU Groups Exist
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-load-vfio-modules-at-boot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Load VFIO Modules at Boot
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-bind-the-nvidia-gpu-to-vfio-pci" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Bind the NVIDIA GPU to vfio-pci
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Bind the NVIDIA GPU to vfio-pci">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-9-identify-gpu-ids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 9: Identify GPU IDs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-10-configure-vfio-pci-ids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 10: Configure vfio-pci IDs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-11-blacklist-host-nvidia-drivers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 11: Blacklist Host NVIDIA Drivers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-12-final-host-side-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 12: Final Host-Side Verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-create-the-ubuntu-vm-proxmox-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Create the Ubuntu VM (Proxmox UI)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-troubleshooting-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Troubleshooting Notes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../../../.." class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+                  <span class="md-ellipsis">
+                    Back to index
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    Metadata
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5z"/></svg>
+                        <time datetime="2026-04-06 00:00:00+00:00" class="md-ellipsis">April 6, 2026</time>
+                      </div>
+                    </li>
+                    
+                    
+                    
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+            
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+  
+
+
+
+
+<h1 id="proxmox-gpu-passthrough-tutorial-amd-ryzen-9-7950x-nvidia-rtx-5060-ti">Proxmox GPU Passthrough Tutorial (AMD Ryzen 9 7950X + NVIDIA RTX 5060 Ti)</h1>
+<!-- more -->
+
+<p>This post is a cleaned-up tutorial from a real troubleshooting session. The target setup is:</p>
+<ul>
+<li>Host: Proxmox VE on AMD platform</li>
+<li>CPU: Ryzen 9 7950X (with integrated AMD Raphael graphics)</li>
+<li>Motherboard: MSI PRO B650M-A WIFI</li>
+<li>Discrete GPU to passthrough: NVIDIA GeForce RTX 5060 Ti</li>
+<li>Host display stays on the Ryzen iGPU, while the NVIDIA card is dedicated to the VM</li>
+</ul>
+<p>If you are on a similar AM5 + NVIDIA setup, this walkthrough should map very closely.</p>
+<hr />
+<h2 id="technology-stack-behind-this-tutorial">Technology Stack Behind This Tutorial</h2>
+<p>This guide touches multiple layers of the virtualization stack. Understanding these layers makes troubleshooting much easier:</p>
+<ol>
+<li>
+<p>Firmware layer (UEFI/BIOS)</p>
+<ul>
+<li><code>SVM</code> (AMD-V) enables CPU virtualization extensions.</li>
+<li><code>IOMMU</code> (AMD-Vi) enables DMA remapping and device isolation.</li>
+<li>UEFI mode avoids legacy initialization behavior that can interfere with modern GPU passthrough.</li>
+</ul>
+</li>
+<li>
+<p>Hypervisor layer (Proxmox VE)</p>
+<ul>
+<li>Proxmox is the management layer; actual VM acceleration is provided by Linux <code>KVM</code> and device emulation by <code>QEMU</code>.</li>
+<li>GPU passthrough means QEMU exposes a real PCIe device directly to the guest, instead of emulating a virtual GPU.</li>
+</ul>
+</li>
+<li>
+<p>Isolation layer (Linux IOMMU groups)</p>
+<ul>
+<li><code>IOMMU</code> = <code>Input-Output Memory Management Unit</code>.</li>
+<li>The kernel groups PCI devices by isolation boundaries.</li>
+<li>Passthrough is safe/reliable only when devices are in proper IOMMU groups.</li>
+</ul>
+</li>
+<li>
+<p>Driver binding layer (VFIO)</p>
+<ul>
+<li><code>VFIO</code> = <code>Virtual Function I/O</code>.</li>
+<li><code>vfio</code> (VFIO core framework), <code>vfio_iommu_type1</code> (Type-1 IOMMU backend), <code>vfio_pci</code> (PCI device binding driver), and <code>vfio_virqfd</code> (virtual interrupt eventfd support) allow userspace VMs to own PCI devices securely.</li>
+<li>Binding the GPU to <code>vfio-pci</code> prevents host graphics drivers from taking the card first.</li>
+</ul>
+</li>
+<li>
+<p>Boot and module orchestration layer</p>
+<ul>
+<li>GRUB injects kernel flags (<code>amd_iommu=on iommu=pt</code>).</li>
+<li><code>initramfs</code> ensures required modules and binding logic are available early during boot.</li>
+<li><code>/etc/modules-load.d/</code> controls module auto-load; <code>/etc/modprobe.d/</code> controls module options and blacklists.</li>
+</ul>
+</li>
+<li>
+<p>Guest VM platform layer</p>
+<ul>
+<li><code>OVMF (UEFI)</code> + <code>q35</code> gives a modern virtual platform aligned with PCIe passthrough.</li>
+<li><code>CPU type: host</code> exposes native CPU features.</li>
+<li>Disabling memory ballooning avoids DMA-related instability for passthrough workloads.</li>
+</ul>
+</li>
+<li>
+<p>Verification toolchain</p>
+<ul>
+<li><code>dmesg</code>, <code>/proc/cmdline</code>, <code>find /sys/kernel/iommu_groups</code>, and <code>lspci -nnk</code> validate host readiness.</li>
+<li><code>nvidia-smi</code> validates the guest-side driver and runtime state.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="1-what-success-looks-like">1. What Success Looks Like</h2>
+<p>Before details, here is the expected end state:</p>
+<ol>
+<li>BIOS has SVM and IOMMU enabled.</li>
+<li>Kernel boots with <code>amd_iommu=on iommu=pt</code>.</li>
+<li>IOMMU groups exist under <code>/sys/kernel/iommu_groups/</code>.</li>
+<li>NVIDIA GPU functions are bound to <code>vfio-pci</code> on the host.</li>
+<li>VM is created with <code>OVMF (UEFI)</code> + <code>q35</code>, and GPU is attached as PCI passthrough.</li>
+</ol>
+<hr />
+<h2 id="2-bios-configuration-msi-click-bios-5">2. BIOS Configuration (MSI Click BIOS 5)</h2>
+<h3 id="step-1-enter-advanced-bios">Step 1: Enter Advanced BIOS</h3>
+<p>Enter BIOS (usually <code>Delete</code> at boot), then switch to Advanced Mode.</p>
+<p><img alt="img01_msi_bios_advanced_entry" src="../../../../../images/proxmox_vm_gpu_passthrough/2026-04-06T10%3A50%3A01.783Z-image.png" /></p>
+<h3 id="step-2-navigate-to-amd-cbs">Step 2: Navigate to AMD CBS</h3>
+<p>Go to:</p>
+<ul>
+<li><code>OC</code> -&gt; <code>Advanced CPU Configuration</code> -&gt; <code>AMD CBS</code></li>
+</ul>
+<p><img alt="img02_oc_menu_navigation" src="../../../../../images/proxmox_vm_gpu_passthrough/2026-04-06T10%3A50%3A45.146Z-image.png" /></p>
+<h3 id="step-3-enable-virtualization-features">Step 3: Enable Virtualization Features</h3>
+<p>Inside AMD CBS, set:</p>
+<ul>
+<li><code>SVM Enable</code> -&gt; <code>Enabled</code></li>
+<li><code>IOMMU</code> -&gt; <code>Enabled</code></li>
+</ul>
+<p>Use explicit <code>Enabled</code> instead of <code>Auto</code> for passthrough reliability.</p>
+<p>Under the hood:</p>
+<ul>
+<li><code>SVM</code> enables hardware-assisted virtualization instructions used by KVM.</li>
+<li><code>IOMMU</code> enables DMA remapping, which is the foundation for safe PCIe passthrough.</li>
+<li>If either is missing, VFIO can load but device assignment will typically fail or be unstable.</li>
+</ul>
+<p><img alt="img03_amd_cbs_cpu_options" src="../../../../../images/proxmox_vm_gpu_passthrough/2026-04-06T10%3A52%3A07.465Z-image.png" /></p>
+<h3 id="step-4-optional-stability-tweak">Step 4: Optional Stability Tweak</h3>
+<p>Optional on Ryzen hosts used as servers:</p>
+<ul>
+<li><code>Global C-state Control</code> -&gt; <code>Disabled</code></li>
+</ul>
+<p>Other options like <code>Pre-boot DMA Protection</code> and <code>PCIe ARI Support</code> can remain <code>Auto</code> unless you have a specific need.</p>
+<p><img alt="img04_amd_cbs_advanced_options.1" src="../../../../../images/proxmox_vm_gpu_passthrough/2026-04-06T10%3A56%3A01.980Z-image.png" />
+<img alt="img04_amd_cbs_advanced_options.2" src="../../../../../images/proxmox_vm_gpu_passthrough/2026-04-06T10%3A52%3A50.040Z-image.png" /></p>
+<h3 id="step-5-confirm-boot-mode">Step 5: Confirm Boot Mode</h3>
+<p>In <code>Settings</code> -&gt; <code>Boot</code>, confirm UEFI boot mode.</p>
+<ul>
+<li><code>Boot mode select</code> should be <code>UEFI</code></li>
+</ul>
+<p><img alt="img05_boot_mode_uefi" src="../../../../../images/proxmox_vm_gpu_passthrough/2026-04-06T10%3A48%3A52.865Z-image.png" /></p>
+<p>Save and reboot (<code>F10</code>).</p>
+<hr />
+<h2 id="3-verify-and-enable-iommu-in-proxmox">3. Verify and Enable IOMMU in Proxmox</h2>
+<h3 id="step-6-first-check-in-host-shell">Step 6: First Check in Host Shell</h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>dmesg<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-e<span class="w"> </span>DMAR<span class="w"> </span>-e<span class="w"> </span>IOMMU
+</span></code></pre></div>
+<p>On AMD, you may initially see detection lines such as:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>AMD-Vi: IOMMU performance counters supported
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Detected AMD IOMMU #0
+</span></code></pre></div>
+<p>This confirms hardware is visible, but we still need kernel flags.</p>
+<h3 id="step-7-add-kernel-parameters-grub">Step 7: Add Kernel Parameters (GRUB)</h3>
+<p>Check current cmdline:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>cat<span class="w"> </span>/proc/cmdline
+</span></code></pre></div>
+<p>In this session it showed <code>root=/dev/mapper/pve-root</code>, which indicates GRUB on LVM.</p>
+<p>Edit:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>nano<span class="w"> </span>/etc/default/grub
+</span></code></pre></div>
+<p>Set:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nv">GRUB_CMDLINE_LINUX_DEFAULT</span><span class="o">=</span><span class="s2">&quot;quiet amd_iommu=on iommu=pt&quot;</span>
+</span></code></pre></div>
+<p>Why these flags matter:</p>
+<ul>
+<li><code>amd_iommu=on</code>: explicitly enables AMD IOMMU support in kernel boot path.</li>
+<li><code>iommu=pt</code>: keeps host-side overhead lower for non-assigned devices by using pass-through mappings where possible.</li>
+<li>Without correct boot flags, BIOS settings alone may not produce usable runtime isolation.</li>
+</ul>
+<p>Apply and reboot:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>update-grub
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>reboot
+</span></code></pre></div>
+<p>After reboot, verify:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>cat<span class="w"> </span>/proc/cmdline
+</span></code></pre></div>
+<p>You should now see <code>amd_iommu=on iommu=pt</code>.</p>
+<h3 id="step-8-verify-iommu-groups-exist">Step 8: Verify IOMMU Groups Exist</h3>
+<p>Quick check:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>find<span class="w"> </span>/sys/kernel/iommu_groups/<span class="w"> </span>-maxdepth<span class="w"> </span><span class="m">0</span>
+</span></code></pre></div>
+<p>Better check (shows actual group entries):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>find<span class="w"> </span>/sys/kernel/iommu_groups/<span class="w"> </span>-type<span class="w"> </span>l<span class="w"> </span><span class="p">|</span><span class="w"> </span>head
+</span></code></pre></div>
+<p>If <code>/sys/kernel/iommu_groups/</code> exists and contains entries, IOMMU is active.</p>
+<p>This is a key architectural checkpoint: IOMMU groups are the kernel's isolation model, and VFIO relies on this model to guarantee a device can be safely handed to a VM.</p>
+<hr />
+<h2 id="4-load-vfio-modules-at-boot">4. Load VFIO Modules at Boot</h2>
+<p>Historically people edited <code>/etc/modules</code>, but on systemd-based systems the cleaner way is a dedicated file in <code>/etc/modules-load.d/</code>.</p>
+<p>Stack detail:</p>
+<ul>
+<li><code>/etc/modules-load.d/*.conf</code> controls which kernel modules are loaded at boot.</li>
+<li><code>/etc/modprobe.d/*.conf</code> controls module parameters (for example, VFIO device IDs) and blacklists.</li>
+<li>Keeping loading and policy in separate files makes maintenance and debugging clearer.</li>
+</ul>
+<p>Create:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>nano<span class="w"> </span>/etc/modules-load.d/vfio.conf
+</span></code></pre></div>
+<p>Add:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>vfio
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>vfio_iommu_type1
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>vfio_pci
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>vfio_virqfd
+</span></code></pre></div>
+<p>Update initramfs:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>update-initramfs<span class="w"> </span>-u<span class="w"> </span>-k<span class="w"> </span>all
+</span></code></pre></div>
+<p>If you see:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>No /etc/kernel/proxmox-boot-uuids found, skipping ESP sync.
+</span></code></pre></div>
+<p>that is normal for a GRUB/LVM layout.</p>
+<p>Reboot:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>reboot
+</span></code></pre></div>
+<hr />
+<h2 id="5-bind-the-nvidia-gpu-to-vfio-pci">5. Bind the NVIDIA GPU to vfio-pci</h2>
+<h3 id="step-9-identify-gpu-ids">Step 9: Identify GPU IDs</h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>lspci<span class="w"> </span>-nnk<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-A<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="s2">&quot;VGA&quot;</span>
+</span></code></pre></div>
+<p>In this setup:</p>
+<ul>
+<li>NVIDIA GPU: <code>01:00.0</code> -&gt; <code>[10de:2d04]</code></li>
+<li>NVIDIA audio: <code>01:00.1</code> -&gt; <code>[10de:22eb]</code></li>
+<li>Host iGPU (keep for Proxmox): AMD Raphael <code>11:00.0</code> (<code>amdgpu</code>)</li>
+</ul>
+<h3 id="step-10-configure-vfio-pci-ids">Step 10: Configure vfio-pci IDs</h3>
+<p>Create:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>nano<span class="w"> </span>/etc/modprobe.d/vfio.conf
+</span></code></pre></div>
+<p>Add:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>options vfio-pci ids=10de:2d04,10de:22eb disable_vga=1
+</span></code></pre></div>
+<p>What this does:</p>
+<ul>
+<li><code>ids=...</code> tells VFIO exactly which PCI functions to claim (GPU + HDMI/DP audio).</li>
+<li><code>disable_vga=1</code> helps avoid legacy VGA routing conflicts on some boards/firmware combinations.</li>
+</ul>
+<h3 id="step-11-blacklist-host-nvidia-drivers">Step 11: Blacklist Host NVIDIA Drivers</h3>
+<p>Create:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>nano<span class="w"> </span>/etc/modprobe.d/blacklist.conf
+</span></code></pre></div>
+<p>Add:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>blacklist nvidia
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>blacklist nouveau
+</span></code></pre></div>
+<p>Notes:</p>
+<ul>
+<li>Do not blacklist <code>amdgpu</code> (host iGPU needs it).</li>
+<li><code>blacklist radeon</code> is optional and usually unnecessary on modern Ryzen iGPU setups.</li>
+</ul>
+<p>The binding order is critical: if <code>nouveau</code>/<code>nvidia</code> binds first, VFIO cannot cleanly claim the device later without manual unbind/rebind.</p>
+<p>Apply and reboot:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>update-initramfs<span class="w"> </span>-u<span class="w"> </span>-k<span class="w"> </span>all
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>reboot
+</span></code></pre></div>
+<h3 id="step-12-final-host-side-verification">Step 12: Final Host-Side Verification</h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>lspci<span class="w"> </span>-nnk<span class="w"> </span>-d<span class="w"> </span>10de:
+</span></code></pre></div>
+<p>Success should look like:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>01:00.0 ... Kernel driver in use: vfio-pci
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>01:00.1 ... Kernel driver in use: vfio-pci
+</span></code></pre></div>
+<p>The chat session reached this exact success state.</p>
+<hr />
+<h2 id="6-create-the-ubuntu-vm-proxmox-ui">6. Create the Ubuntu VM (Proxmox UI)</h2>
+<p>Once host-side binding is done, create a new VM instead of reusing old SeaBIOS templates.</p>
+<p>Recommended wizard settings:</p>
+<ol>
+<li>OS: your Ubuntu ISO</li>
+<li>System:<ul>
+<li>BIOS: <code>OVMF (UEFI)</code></li>
+<li>Machine: <code>q35</code></li>
+<li>Graphics: keep <code>Default</code> or <code>VirtIO-GPU</code> during install</li>
+</ul>
+</li>
+<li>CPU:<ul>
+<li>Type: <code>host</code></li>
+</ul>
+</li>
+<li>Memory:<ul>
+<li>Disable ballooning</li>
+</ul>
+</li>
+<li>Network:<ul>
+<li><code>VirtIO</code></li>
+</ul>
+</li>
+</ol>
+<p>Why this VM stack is recommended:</p>
+<ul>
+<li><code>OVMF</code> matches modern GPU firmware expectations and guest driver behavior.</li>
+<li><code>q35</code> models a PCIe-first chipset, which is a better fit for passthrough than legacy <code>i440fx</code>.</li>
+<li><code>VirtIO</code> keeps paravirtualized devices efficient so CPU/GPU resources are focused on real workloads.</li>
+</ul>
+<p>Then add PCI device:</p>
+<ul>
+<li><code>Hardware</code> -&gt; <code>Add</code> -&gt; <code>PCI Device</code></li>
+<li>Select <code>01:00.0</code> (NVIDIA VGA)</li>
+<li>Check:</li>
+<li><code>All Functions</code></li>
+<li><code>ROM-Bar</code></li>
+<li><code>PCI-Express</code></li>
+</ul>
+<p>Why only <code>01:00.0</code>?</p>
+<ul>
+<li>Because <code>All Functions</code> also includes <code>01:00.1</code> audio automatically.</li>
+</ul>
+<p>Install Ubuntu, then inside guest install NVIDIA driver and verify with:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>nvidia-smi
+</span></code></pre></div>
+<hr />
+<h2 id="7-troubleshooting-notes">7. Troubleshooting Notes</h2>
+<ol>
+<li><code>vfio-pci</code> not in use after reboot:<ul>
+<li>Recheck <code>vfio.conf</code>, blacklist file, and rerun <code>update-initramfs -u -k all</code>.</li>
+</ul>
+</li>
+<li>No IOMMU groups:<ul>
+<li>Recheck BIOS SVM/IOMMU and kernel cmdline flags.</li>
+</ul>
+</li>
+<li>Black screen when starting VM installer:<ul>
+<li>Keep a virtual display enabled during initial install, then tune display later.</li>
+</ul>
+</li>
+<li>Confused by <code>Kernel modules:</code> output in <code>lspci</code>:<ul>
+<li>It only means modules exist; <code>Kernel driver in use</code> is what matters.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="8-summary">8. Summary</h2>
+<p>The host side is done when both <code>01:00.0</code> and <code>01:00.1</code> show <code>Kernel driver in use: vfio-pci</code>.</p>
+<p>At that point, Proxmox is no longer using the NVIDIA card, and the VM can claim it directly for near-native performance.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+  
+
+
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.tracking", "navigation.tabs", "navigation.path", "navigation.indexes", "navigation.top", "content.code.copy"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
