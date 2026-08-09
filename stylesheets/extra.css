@@ -1,0 +1,21 @@
+/* Blog list summary text from front matter */
+.md-post--excerpt .md-post__summary {
+  color: var(--md-default-fg-color--light);
+  font-size: 0.78rem;
+  line-height: 1.55;
+  margin: 0.45rem 0 0.8rem;
+}
+
+.md-post--excerpt .md-post__summary::before {
+  content: "";
+  display: block;
+  width: 2.2rem;
+  height: 2px;
+  margin-bottom: 0.45rem;
+  border-radius: 999px;
+  background-color: color-mix(in srgb, var(--md-accent-fg-color) 55%, transparent);
+}
+
+[data-md-color-scheme="slate"] .md-post--excerpt .md-post__summary {
+  color: color-mix(in srgb, var(--md-default-fg-color) 78%, white);
+}
