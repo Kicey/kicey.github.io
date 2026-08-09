@@ -103,13 +103,24 @@ Under the hood:
 
 ![img03_amd_cbs_cpu_options](images/proxmox_vm_gpu_passthrough/2026-04-06T10:52:07.465Z-image.png)
 
-### Step 4: Optional Stability Tweak
+### Step 4: Configure the Two DMA Protection Options
 
-Optional on Ryzen hosts used as servers:
+On the tested MSI PRO B650M-A WIFI firmware, explicitly set both similarly named options:
+
+- `Pre-boot DMA Protection` -> `Disabled`
+- `Kernel DMA protection Indicator` -> `Disabled`
+
+They are distinct settings. Disabling `Pre-boot DMA Protection` alone did **not** remove the firmware-requested direct IOMMU mappings in this setup; disabling `Kernel DMA protection Indicator` was the step that allowed the GPU VM to start. Do not disable `IOMMU`: it must remain `Enabled` for VFIO isolation.
+
+The exact submenu can move between BIOS releases, so search the AMD CBS and security-related menus for both full option names. After changing them, save the BIOS settings and reboot the host.
+
+This is a security trade-off: the two options control firmware/OS DMA-protection policy, while `IOMMU` provides the DMA remapping required by passthrough. Disable them only on a host whose physical and PCIe devices you trust.
+
+An additional, optional Ryzen server stability tweak is:
 
 - `Global C-state Control` -> `Disabled`
 
-Other options like `Pre-boot DMA Protection` and `PCIe ARI Support` can remain `Auto` unless you have a specific need.
+`PCIe ARI Support` can remain `Auto` unless you have a specific need.
 
 ![img04_amd_cbs_advanced_options.1](images/proxmox_vm_gpu_passthrough/2026-04-06T10:56:01.980Z-image.png)
 ![img04_amd_cbs_advanced_options.2](images/proxmox_vm_gpu_passthrough/2026-04-06T10:52:50.040Z-image.png)
@@ -387,6 +398,11 @@ nvidia-smi
 	- Keep a virtual display enabled during initial install, then tune display later.
 4. Confused by `Kernel modules:` output in `lspci`:
 	- It only means modules exist; `Kernel driver in use` is what matters.
+5. VM startup fails with a firmware-requested 1:1 IOMMU mapping:
+	- The kernel log may contain `Firmware has requested this device have a 1:1 IOMMU mapping`, while QEMU reports `Failed to set group container: Invalid argument`.
+	- For this tutorial's GPU in IOMMU group 13, `cat /sys/kernel/iommu_groups/13/reserved_regions` safely reads the firmware-derived reservations. One or more entries ending in `direct` confirm the relevant identity-mapping constraint; replace `13` if your GPU uses another group.
+	- Revisit BIOS Step 4 and explicitly disable **both** DMA-protection options. In the tested case, `Pre-boot DMA Protection = Disabled` alone did not help; `Kernel DMA protection Indicator = Disabled` was the actual fix.
+	- The likely mechanism is that the enabled indicator causes this MSI firmware to expose AMD IVRS/IVMD exclusion regions. Linux represents them as mandatory direct/identity mappings, so VFIO refuses to replace the GPU's host IOMMU domain with the VM's translated DMA domain.
 
 ------
 
@@ -395,4 +411,3 @@ nvidia-smi
 The host side is done when both `01:00.0` and `01:00.1` show `Kernel driver in use: vfio-pci`.
 
 At that point, Proxmox is no longer using the NVIDIA card, and the VM can claim it directly for near-native performance.
-

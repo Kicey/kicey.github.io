@@ -97,13 +97,24 @@ summary: 一篇完整的 Proxmox GPU 直通实战记录，覆盖 BIOS 设置、I
 
 ![img03_amd_cbs_cpu_options](../images/proxmox_vm_gpu_passthrough/2026-04-06T10:52:07.465Z-image.png)
 
-### 步骤 4：可选稳定性优化
+### 步骤 4：配置两个 DMA Protection 选项
 
-对于 Ryzen 作为长期运行宿主机，可以考虑：
+在本次测试的 MSI PRO B650M-A WIFI 固件中，需要显式设置以下两个名称相近、但彼此独立的选项：
+
+- `Pre-boot DMA Protection` -> `Disabled`
+- `Kernel DMA protection Indicator` -> `Disabled`
+
+仅关闭 `Pre-boot DMA Protection` **不会**消除本机固件要求的 direct IOMMU 映射；真正让 GPU 虚拟机恢复启动的是关闭 `Kernel DMA protection Indicator`。不要关闭 `IOMMU`，VFIO 仍然依赖它完成 DMA 重映射与设备隔离。
+
+不同 BIOS 版本可能会调整菜单位置，请在 AMD CBS 与安全相关菜单中搜索这两个完整名称。修改后保存 BIOS 设置并重启宿主机。
+
+这项操作存在安全取舍：上述两个选项控制固件/操作系统的 DMA 保护策略，而 `IOMMU` 提供直通所需的 DMA 重映射。仅建议在物理环境与 PCIe 设备均可信的宿主机上关闭它们。
+
+此外，Ryzen 长期运行宿主机还可以考虑以下可选稳定性设置：
 
 - `Global C-state Control` -> `Disabled`
 
-`Pre-boot DMA Protection`、`PCIe ARI Support` 一般保持 `Auto` 即可。
+若没有特殊需求，`PCIe ARI Support` 可以保持 `Auto`。
 
 ![img04_amd_cbs_advanced_options.1](../images/proxmox_vm_gpu_passthrough/2026-04-06T10:56:01.980Z-image.png)
 ![img04_amd_cbs_advanced_options.2](../images/proxmox_vm_gpu_passthrough/2026-04-06T10:52:50.040Z-image.png)
@@ -354,6 +365,11 @@ nvidia-smi
    - 先保留虚拟显示设备完成系统安装，之后再调整显示策略。
 4. `lspci` 里看到 `Kernel modules` 但没生效：
    - 关键看 `Kernel driver in use`，不是看模块是否存在。
+5. 启动虚拟机时出现固件要求的 1:1 IOMMU 映射错误：
+   - 内核日志可能出现 `Firmware has requested this device have a 1:1 IOMMU mapping`，同时 QEMU 报告 `Failed to set group container: Invalid argument`。
+   - 对于本文位于 IOMMU group 13 的显卡，执行 `cat /sys/kernel/iommu_groups/13/reserved_regions` 可安全地只读检查固件派生的保留区；如果显卡位于其他组，请替换 `13`。若存在以 `direct` 结尾的条目，即确认存在相关的恒等映射约束。
+   - 返回 BIOS 步骤 4，显式关闭**两个** DMA Protection 选项。本次实测中，仅设置 `Pre-boot DMA Protection = Disabled` 无效；`Kernel DMA protection Indicator = Disabled` 才是实际修复。
+   - 其可能机制是：启用该 Indicator 后，MSI 固件会暴露 AMD IVRS/IVMD exclusion regions；Linux 将其表示为必须保留的 direct/恒等映射，导致 VFIO 无法把 GPU 从宿主机 IOMMU domain 切换到虚拟机的 DMA domain。
 
 ------
 
