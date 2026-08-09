@@ -1,0 +1,17 @@
+[project]
+name = "kicey-github-io"
+version = "0.1.0"
+description = "MkDocs source for kicey.github.io"
+requires-python = ">=3.12"
+dependencies = [
+    "mkdocs-material>=9,<10",
+    "mkdocs-rss-plugin>=1,<2",
+]
+
+[tool.uv]
+package = false
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
+default = true
