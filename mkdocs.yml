@@ -1,5 +1,9 @@
 site_name: kicey's blog
 site_url: https://kicey.github.io
+site_description: Practical notes about computer science, Linux, programming languages, virtualization, and systems engineering.
+site_author: kicey
+hooks:
+  - hooks/seo.py
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
@@ -58,6 +62,8 @@ theme:
 nav:
   - Blog:
     - index.md
+  - Topics:
+    - topics.md
   - Java:
     - 内存布局: java/java 内存布局.md
     - Hotspot GC 特性: java/Hotspot GC 特性.md
@@ -67,3 +73,6 @@ nav:
     - "使用 buildroot 和 QEMU 调试 linux 内核": kernel/debug_kernel_with_buildroot_qemu.md
   - Redis:
     - "Simple Dynamic String": redis/simple_dynamic_string.md
+extra:
+  author_url: https://github.com/Kicey
+  social_image: images/og.png

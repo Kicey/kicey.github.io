@@ -3,4 +3,108 @@
 {% block extrahead %}
   <meta name="google-site-verification" content="DaC7Ld_kS4qO1e4AxtoweuGG-EHZ7dTyKh2B-aPQokc" />
   {{ super() }}
+  {% set seo_title = page.title | striptags if page and page.title else config.site_name %}
+  {% set seo_description = page.meta.description if page and page.meta and page.meta.description else config.site_description %}
+  {% set seo_image = config.site_url ~ config.extra.social_image %}
+  {% set seo_lang = page.meta.lang if page and page.meta and page.meta.lang else "en" %}
+  {% set seo_is_home = page and page.canonical_url == config.site_url %}
+  <meta property="og:type" content="{% if page and page.meta and page.meta.date %}article{% else %}website{% endif %}" />
+  <meta property="og:site_name" content="{{ config.site_name }}" />
+  <meta property="og:title" content="{{ seo_title }}" />
+  <meta property="og:description" content="{{ seo_description }}" />
+  <meta property="og:url" content="{{ page.canonical_url }}" />
+  <meta property="og:image" content="{{ seo_image }}" />
+  <meta property="og:image:alt" content="{{ config.site_name }} — {{ config.site_description }}" />
+  <meta property="og:locale" content="{% if seo_lang.startswith('zh') %}zh_CN{% else %}en_US{% endif %}" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="{{ seo_title }}" />
+  <meta name="twitter:description" content="{{ seo_description }}" />
+  <meta name="twitter:image" content="{{ seo_image }}" />
+  {% if page and page.meta and page.meta.alternates %}
+    {% for alternate in page.meta.alternates %}
+  <link rel="alternate" hreflang="{{ alternate.lang }}" href="{{ alternate.href }}" />
+    {% endfor %}
+  {% endif %}
+  {% if page and page.meta and page.meta.date %}
+  {% set published = page.meta.date.created if page.meta.date.created else page.meta.date %}
+  <meta property="article:published_time" content="{{ published }}" />
+    {% if page.meta.updated %}
+  <meta property="article:modified_time" content="{{ page.meta.updated }}" />
+    {% endif %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": {{ seo_title | tojson }},
+    "description": {{ seo_description | tojson }},
+    "url": {{ page.canonical_url | tojson }},
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": {{ page.canonical_url | tojson }}
+    },
+    "datePublished": {{ published | string | tojson }},
+    "dateModified": {{ (page.meta.updated if page.meta.updated else published) | string | tojson }},
+    "inLanguage": {{ seo_lang | tojson }},
+    "author": {
+      "@type": "Person",
+      "name": {{ config.site_author | tojson }},
+      "url": {{ config.extra.author_url | tojson }}
+    },
+    "image": {{ seo_image | tojson }}
+  }
+  </script>
+  {% elif seo_is_home %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": {{ config.site_name | tojson }},
+    "description": {{ config.site_description | tojson }},
+    "url": {{ config.site_url | tojson }},
+    "inLanguage": ["en", "zh-Hans"],
+    "author": {
+      "@type": "Person",
+      "name": {{ config.site_author | tojson }},
+      "url": {{ config.extra.author_url | tojson }}
+    }
+  }
+  </script>
+  {% endif %}
+  {% if page and not seo_is_home and page.canonical_url %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": {{ config.site_url | tojson }}
+      },
+      {% if page.url == "topics/" or (page.meta and page.meta.date) %}
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": {{ seo_title | tojson }},
+        "item": {{ page.canonical_url | tojson }}
+      }
+      {% else %}
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Topics",
+        "item": {{ (config.site_url ~ "topics/") | tojson }}
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": {{ seo_title | tojson }},
+        "item": {{ page.canonical_url | tojson }}
+      }
+      {% endif %}
+    ]
+  }
+  </script>
+  {% endif %}
 {% endblock %}

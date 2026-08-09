@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Configure Git Credentials
         run: |
           git config user.name github-actions[bot]
@@ -19,4 +21,6 @@ jobs:
         with:
           enable-cache: true
       - run: uv sync --locked
+      - run: uv run --locked mkdocs build --strict
+      - run: uv run --locked python scripts/check_seo.py site
       - run: uv run --locked mkdocs gh-deploy --force
