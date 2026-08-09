@@ -1,11 +1,15 @@
 
 <!doctype html>
-<html lang="en" class="no-js">
+<html lang="zh-Hans" class="no-js">
   <head>
     
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
+        <meta name="description" content="基于一个最小 Go Demo 介绍 Rete 算法，重点说明事实如何在规则网络中传播，以及节点内存为何能显著提升匹配效率。">
+      
+      
+        <meta name="author" content="kicey">
       
       
         <link rel="canonical" href="https://kicey.github.io/blog/2026/04/22/%E9%80%9A%E8%BF%87%E4%B8%80%E4%B8%AA%E6%9C%80%E5%B0%8F-go-demo-%E7%90%86%E8%A7%A3-rete-%E7%AE%97%E6%B3%95/">
@@ -63,6 +67,83 @@
     
     
   <meta name="google-site-verification" content="DaC7Ld_kS4qO1e4AxtoweuGG-EHZ7dTyKh2B-aPQokc" />
+  
+  
+  
+  
+  
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="kicey's blog" />
+  <meta property="og:title" content="通过一个最小 Go Demo 理解 Rete 算法" />
+  <meta property="og:description" content="基于一个最小 Go Demo 介绍 Rete 算法，重点说明事实如何在规则网络中传播，以及节点内存为何能显著提升匹配效率。" />
+  <meta property="og:url" content="https://kicey.github.io/blog/2026/04/22/%E9%80%9A%E8%BF%87%E4%B8%80%E4%B8%AA%E6%9C%80%E5%B0%8F-go-demo-%E7%90%86%E8%A7%A3-rete-%E7%AE%97%E6%B3%95/" />
+  <meta property="og:image" content="https://kicey.github.io/images/og.png" />
+  <meta property="og:image:alt" content="kicey's blog — Practical notes about computer science, Linux, programming languages, virtualization, and systems engineering." />
+  <meta property="og:locale" content="zh_CN" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="通过一个最小 Go Demo 理解 Rete 算法" />
+  <meta name="twitter:description" content="基于一个最小 Go Demo 介绍 Rete 算法，重点说明事实如何在规则网络中传播，以及节点内存为何能显著提升匹配效率。" />
+  <meta name="twitter:image" content="https://kicey.github.io/images/og.png" />
+  
+    
+  <link rel="alternate" hreflang="zh-Hans" href="https://kicey.github.io/blog/2026/04/22/%E9%80%9A%E8%BF%87%E4%B8%80%E4%B8%AA%E6%9C%80%E5%B0%8F-go-demo-%E7%90%86%E8%A7%A3-rete-%E7%AE%97%E6%B3%95/" />
+    
+  <link rel="alternate" hreflang="en" href="https://kicey.github.io/blog/2026/04/22/rete-algorithm-introduction-through-a-minimal-go-demo/" />
+    
+  
+  
+  
+  <meta property="article:published_time" content="2026-04-22" />
+    
+  <meta property="article:modified_time" content="2026-04-22" />
+    
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "\u901a\u8fc7\u4e00\u4e2a\u6700\u5c0f Go Demo \u7406\u89e3 Rete \u7b97\u6cd5",
+    "description": "\u57fa\u4e8e\u4e00\u4e2a\u6700\u5c0f Go Demo \u4ecb\u7ecd Rete \u7b97\u6cd5\uff0c\u91cd\u70b9\u8bf4\u660e\u4e8b\u5b9e\u5982\u4f55\u5728\u89c4\u5219\u7f51\u7edc\u4e2d\u4f20\u64ad\uff0c\u4ee5\u53ca\u8282\u70b9\u5185\u5b58\u4e3a\u4f55\u80fd\u663e\u8457\u63d0\u5347\u5339\u914d\u6548\u7387\u3002",
+    "url": "https://kicey.github.io/blog/2026/04/22/%E9%80%9A%E8%BF%87%E4%B8%80%E4%B8%AA%E6%9C%80%E5%B0%8F-go-demo-%E7%90%86%E8%A7%A3-rete-%E7%AE%97%E6%B3%95/",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://kicey.github.io/blog/2026/04/22/%E9%80%9A%E8%BF%87%E4%B8%80%E4%B8%AA%E6%9C%80%E5%B0%8F-go-demo-%E7%90%86%E8%A7%A3-rete-%E7%AE%97%E6%B3%95/"
+    },
+    "datePublished": "2026-04-22",
+    "dateModified": "2026-04-22",
+    "inLanguage": "zh-Hans",
+    "author": {
+      "@type": "Person",
+      "name": "kicey",
+      "url": "https://github.com/Kicey"
+    },
+    "image": "https://kicey.github.io/images/og.png"
+  }
+  </script>
+  
+  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://kicey.github.io/"
+      },
+      
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "\u901a\u8fc7\u4e00\u4e2a\u6700\u5c0f Go Demo \u7406\u89e3 Rete \u7b97\u6cd5",
+        "item": "https://kicey.github.io/blog/2026/04/22/%E9%80%9A%E8%BF%87%E4%B8%80%E4%B8%AA%E6%9C%80%E5%B0%8F-go-demo-%E7%90%86%E8%A7%A3-rete-%E7%AE%97%E6%B3%95/"
+      }
+      
+    ]
+  }
+  </script>
   
 
   </head>
@@ -227,6 +308,28 @@
     
   
   Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../../topics/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Topics
 
         </a>
       </li>
@@ -570,8 +673,6 @@
       
         
       
-        
-      
     
     
     
@@ -593,7 +694,7 @@
   <span class="md-ellipsis">
     
   
-    Java
+    Topics
   
 
     
@@ -606,6 +707,97 @@
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../topics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Topics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -700,10 +892,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
             
   
   
@@ -721,8 +913,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -789,10 +981,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
   
@@ -810,8 +1002,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -878,10 +1070,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
             
   
   
@@ -899,8 +1091,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   

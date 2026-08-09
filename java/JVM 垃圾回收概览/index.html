@@ -1,11 +1,15 @@
 
 <!doctype html>
-<html lang="en" class="no-js">
+<html lang="zh-Hans" class="no-js">
   <head>
     
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
+        <meta name="description" content="深入理解 Java 虚拟机：JVM高级特性与最佳实践（第3版）周志明">
+      
+      
+        <meta name="author" content="kicey">
       
       
         <link rel="canonical" href="https://kicey.github.io/java/JVM%20%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%A6%82%E8%A7%88/">
@@ -59,6 +63,55 @@
     
     
   <meta name="google-site-verification" content="DaC7Ld_kS4qO1e4AxtoweuGG-EHZ7dTyKh2B-aPQokc" />
+  
+  
+  
+  
+  
+  
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="kicey's blog" />
+  <meta property="og:title" content="JVM 垃圾回收概览" />
+  <meta property="og:description" content="深入理解 Java 虚拟机：JVM高级特性与最佳实践（第3版）周志明" />
+  <meta property="og:url" content="https://kicey.github.io/java/JVM%20%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%A6%82%E8%A7%88/" />
+  <meta property="og:image" content="https://kicey.github.io/images/og.png" />
+  <meta property="og:image:alt" content="kicey's blog — Practical notes about computer science, Linux, programming languages, virtualization, and systems engineering." />
+  <meta property="og:locale" content="zh_CN" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="JVM 垃圾回收概览" />
+  <meta name="twitter:description" content="深入理解 Java 虚拟机：JVM高级特性与最佳实践（第3版）周志明" />
+  <meta name="twitter:image" content="https://kicey.github.io/images/og.png" />
+  
+  
+  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://kicey.github.io/"
+      },
+      
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Topics",
+        "item": "https://kicey.github.io/topics/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "JVM \u5783\u573e\u56de\u6536\u6982\u89c8",
+        "item": "https://kicey.github.io/java/JVM%20%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%A6%82%E8%A7%88/"
+      }
+      
+    ]
+  }
+  </script>
   
 
   </head>
@@ -221,6 +274,28 @@
     
   
   Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../topics/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Topics
 
         </a>
       </li>
@@ -557,8 +632,6 @@
       
         
       
-        
-      
     
     
     
@@ -580,7 +653,7 @@
   <span class="md-ellipsis">
     
   
-    Java
+    Topics
   
 
     
@@ -593,6 +666,97 @@
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Topics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -687,10 +851,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
             
   
   
@@ -708,8 +872,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -776,10 +940,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
   
@@ -797,8 +961,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -865,10 +1029,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
             
   
   
@@ -886,8 +1050,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1217,6 +1381,9 @@
 
 
 
+
+  
+  
 
 
 

@@ -6,6 +6,10 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
+        <meta name="description" content="redis 中以 sds （simple dynamic string，简单动态字符串）来表示字符串（既是 redis 中一种基础数据结构，也是 redis 内部用于代替 c 语言中 char 的数据结构）。">
+      
+      
+        <meta name="author" content="kicey">
       
       
         <link rel="canonical" href="https://kicey.github.io/redis/simple_dynamic_string/">
@@ -61,6 +65,55 @@
     
     
   <meta name="google-site-verification" content="DaC7Ld_kS4qO1e4AxtoweuGG-EHZ7dTyKh2B-aPQokc" />
+  
+  
+  
+  
+  
+  
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="kicey's blog" />
+  <meta property="og:title" content="Simple Dynamic String" />
+  <meta property="og:description" content="redis 中以 sds （simple dynamic string，简单动态字符串）来表示字符串（既是 redis 中一种基础数据结构，也是 redis 内部用于代替 c 语言中 char 的数据结构）。" />
+  <meta property="og:url" content="https://kicey.github.io/redis/simple_dynamic_string/" />
+  <meta property="og:image" content="https://kicey.github.io/images/og.png" />
+  <meta property="og:image:alt" content="kicey's blog — Practical notes about computer science, Linux, programming languages, virtualization, and systems engineering." />
+  <meta property="og:locale" content="en_US" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Simple Dynamic String" />
+  <meta name="twitter:description" content="redis 中以 sds （simple dynamic string，简单动态字符串）来表示字符串（既是 redis 中一种基础数据结构，也是 redis 内部用于代替 c 语言中 char 的数据结构）。" />
+  <meta name="twitter:image" content="https://kicey.github.io/images/og.png" />
+  
+  
+  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://kicey.github.io/"
+      },
+      
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Topics",
+        "item": "https://kicey.github.io/topics/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Simple Dynamic String",
+        "item": "https://kicey.github.io/redis/simple_dynamic_string/"
+      }
+      
+    ]
+  }
+  </script>
   
 
   </head>
@@ -223,6 +276,28 @@
     
   
   Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../topics/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Topics
 
         </a>
       </li>
@@ -561,8 +636,6 @@
       
         
       
-        
-      
     
     
     
@@ -584,7 +657,7 @@
   <span class="md-ellipsis">
     
   
-    Java
+    Topics
   
 
     
@@ -597,6 +670,97 @@
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Topics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -691,10 +855,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
             
   
   
@@ -712,8 +876,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -780,10 +944,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
   
@@ -801,8 +965,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -874,10 +1038,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   
@@ -895,8 +1059,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1150,6 +1314,9 @@
 
 
 
+
+  
+  
 
 
 

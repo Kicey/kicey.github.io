@@ -1,11 +1,15 @@
 
 <!doctype html>
-<html lang="en" class="no-js">
+<html lang="zh-Hans" class="no-js">
   <head>
     
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
+        <meta name="description" content="固定可作为GC Roots的节点主要在全局性的引用（例如常量或类静态属性）与执行上下文（例如 栈帧中的本地变量表）中，但是在应用和 jvm 都不断增大的背景下，枚举整个集合耗时还是非常严重。">
+      
+      
+        <meta name="author" content="kicey">
       
       
         <link rel="canonical" href="https://kicey.github.io/java/Hotspot%20GC%20%E7%89%B9%E6%80%A7/">
@@ -63,6 +67,55 @@
     
     
   <meta name="google-site-verification" content="DaC7Ld_kS4qO1e4AxtoweuGG-EHZ7dTyKh2B-aPQokc" />
+  
+  
+  
+  
+  
+  
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="kicey's blog" />
+  <meta property="og:title" content="Hotspot GC 特性" />
+  <meta property="og:description" content="固定可作为GC Roots的节点主要在全局性的引用（例如常量或类静态属性）与执行上下文（例如 栈帧中的本地变量表）中，但是在应用和 jvm 都不断增大的背景下，枚举整个集合耗时还是非常严重。" />
+  <meta property="og:url" content="https://kicey.github.io/java/Hotspot%20GC%20%E7%89%B9%E6%80%A7/" />
+  <meta property="og:image" content="https://kicey.github.io/images/og.png" />
+  <meta property="og:image:alt" content="kicey's blog — Practical notes about computer science, Linux, programming languages, virtualization, and systems engineering." />
+  <meta property="og:locale" content="zh_CN" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Hotspot GC 特性" />
+  <meta name="twitter:description" content="固定可作为GC Roots的节点主要在全局性的引用（例如常量或类静态属性）与执行上下文（例如 栈帧中的本地变量表）中，但是在应用和 jvm 都不断增大的背景下，枚举整个集合耗时还是非常严重。" />
+  <meta name="twitter:image" content="https://kicey.github.io/images/og.png" />
+  
+  
+  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://kicey.github.io/"
+      },
+      
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Topics",
+        "item": "https://kicey.github.io/topics/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Hotspot GC \u7279\u6027",
+        "item": "https://kicey.github.io/java/Hotspot%20GC%20%E7%89%B9%E6%80%A7/"
+      }
+      
+    ]
+  }
+  </script>
   
 
   </head>
@@ -225,6 +278,28 @@
     
   
   Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../topics/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Topics
 
         </a>
       </li>
@@ -556,6 +631,95 @@
       
   
   
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Topics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../topics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Topics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
     
   
   
@@ -581,10 +745,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
   
@@ -602,8 +766,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_2">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -856,10 +1020,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
             
   
   
@@ -877,8 +1041,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -945,10 +1109,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
   
@@ -966,8 +1130,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1034,10 +1198,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
             
   
   
@@ -1055,8 +1219,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1318,6 +1482,9 @@
 
 
 
+
+  
+  
 
 
 

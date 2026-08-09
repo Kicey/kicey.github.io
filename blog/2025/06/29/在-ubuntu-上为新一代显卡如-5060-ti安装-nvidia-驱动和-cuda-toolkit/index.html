@@ -1,11 +1,15 @@
 
 <!doctype html>
-<html lang="en" class="no-js">
+<html lang="zh-Hans" class="no-js">
   <head>
     
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
+        <meta name="description" content="介绍如何在 Ubuntu 上通过 NVIDIA 官方源安装适配 50 系显卡的驱动与 CUDA Toolkit，并处理 Secure Boot 场景。">
+      
+      
+        <meta name="author" content="kicey">
       
       
         <link rel="canonical" href="https://kicey.github.io/blog/2025/06/29/%E5%9C%A8-ubuntu-%E4%B8%8A%E4%B8%BA%E6%96%B0%E4%B8%80%E4%BB%A3%E6%98%BE%E5%8D%A1%E5%A6%82-5060-ti%E5%AE%89%E8%A3%85-nvidia-%E9%A9%B1%E5%8A%A8%E5%92%8C-cuda-toolkit/">
@@ -63,6 +67,83 @@
     
     
   <meta name="google-site-verification" content="DaC7Ld_kS4qO1e4AxtoweuGG-EHZ7dTyKh2B-aPQokc" />
+  
+  
+  
+  
+  
+  
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="kicey's blog" />
+  <meta property="og:title" content="在 Ubuntu 上为新一代显卡（如 5060 Ti）安装 NVIDIA 驱动和 CUDA Toolkit" />
+  <meta property="og:description" content="介绍如何在 Ubuntu 上通过 NVIDIA 官方源安装适配 50 系显卡的驱动与 CUDA Toolkit，并处理 Secure Boot 场景。" />
+  <meta property="og:url" content="https://kicey.github.io/blog/2025/06/29/%E5%9C%A8-ubuntu-%E4%B8%8A%E4%B8%BA%E6%96%B0%E4%B8%80%E4%BB%A3%E6%98%BE%E5%8D%A1%E5%A6%82-5060-ti%E5%AE%89%E8%A3%85-nvidia-%E9%A9%B1%E5%8A%A8%E5%92%8C-cuda-toolkit/" />
+  <meta property="og:image" content="https://kicey.github.io/images/og.png" />
+  <meta property="og:image:alt" content="kicey's blog — Practical notes about computer science, Linux, programming languages, virtualization, and systems engineering." />
+  <meta property="og:locale" content="zh_CN" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="在 Ubuntu 上为新一代显卡（如 5060 Ti）安装 NVIDIA 驱动和 CUDA Toolkit" />
+  <meta name="twitter:description" content="介绍如何在 Ubuntu 上通过 NVIDIA 官方源安装适配 50 系显卡的驱动与 CUDA Toolkit，并处理 Secure Boot 场景。" />
+  <meta name="twitter:image" content="https://kicey.github.io/images/og.png" />
+  
+    
+  <link rel="alternate" hreflang="zh-Hans" href="https://kicey.github.io/blog/2025/06/29/%E5%9C%A8-ubuntu-%E4%B8%8A%E4%B8%BA%E6%96%B0%E4%B8%80%E4%BB%A3%E6%98%BE%E5%8D%A1%E5%A6%82-5060-ti%E5%AE%89%E8%A3%85-nvidia-%E9%A9%B1%E5%8A%A8%E5%92%8C-cuda-toolkit/" />
+    
+  <link rel="alternate" hreflang="en" href="https://kicey.github.io/blog/2025/06/29/installing-nvidia-driver-cuda-toolkit-on-ubuntu-for-newer-gpus-eg-5060-ti/" />
+    
+  
+  
+  
+  <meta property="article:published_time" content="2025-06-29" />
+    
+  <meta property="article:modified_time" content="2026-04-09" />
+    
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "\u5728 Ubuntu \u4e0a\u4e3a\u65b0\u4e00\u4ee3\u663e\u5361\uff08\u5982 5060 Ti\uff09\u5b89\u88c5 NVIDIA \u9a71\u52a8\u548c CUDA Toolkit",
+    "description": "\u4ecb\u7ecd\u5982\u4f55\u5728 Ubuntu \u4e0a\u901a\u8fc7 NVIDIA \u5b98\u65b9\u6e90\u5b89\u88c5\u9002\u914d 50 \u7cfb\u663e\u5361\u7684\u9a71\u52a8\u4e0e CUDA Toolkit\uff0c\u5e76\u5904\u7406 Secure Boot \u573a\u666f\u3002",
+    "url": "https://kicey.github.io/blog/2025/06/29/%E5%9C%A8-ubuntu-%E4%B8%8A%E4%B8%BA%E6%96%B0%E4%B8%80%E4%BB%A3%E6%98%BE%E5%8D%A1%E5%A6%82-5060-ti%E5%AE%89%E8%A3%85-nvidia-%E9%A9%B1%E5%8A%A8%E5%92%8C-cuda-toolkit/",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://kicey.github.io/blog/2025/06/29/%E5%9C%A8-ubuntu-%E4%B8%8A%E4%B8%BA%E6%96%B0%E4%B8%80%E4%BB%A3%E6%98%BE%E5%8D%A1%E5%A6%82-5060-ti%E5%AE%89%E8%A3%85-nvidia-%E9%A9%B1%E5%8A%A8%E5%92%8C-cuda-toolkit/"
+    },
+    "datePublished": "2025-06-29",
+    "dateModified": "2026-04-09",
+    "inLanguage": "zh-Hans",
+    "author": {
+      "@type": "Person",
+      "name": "kicey",
+      "url": "https://github.com/Kicey"
+    },
+    "image": "https://kicey.github.io/images/og.png"
+  }
+  </script>
+  
+  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://kicey.github.io/"
+      },
+      
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "\u5728 Ubuntu \u4e0a\u4e3a\u65b0\u4e00\u4ee3\u663e\u5361\uff08\u5982 5060 Ti\uff09\u5b89\u88c5 NVIDIA \u9a71\u52a8\u548c CUDA Toolkit",
+        "item": "https://kicey.github.io/blog/2025/06/29/%E5%9C%A8-ubuntu-%E4%B8%8A%E4%B8%BA%E6%96%B0%E4%B8%80%E4%BB%A3%E6%98%BE%E5%8D%A1%E5%A6%82-5060-ti%E5%AE%89%E8%A3%85-nvidia-%E9%A9%B1%E5%8A%A8%E5%92%8C-cuda-toolkit/"
+      }
+      
+    ]
+  }
+  </script>
   
 
   </head>
@@ -227,6 +308,28 @@
     
   
   Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../../topics/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Topics
 
         </a>
       </li>
@@ -570,8 +673,6 @@
       
         
       
-        
-      
     
     
     
@@ -593,7 +694,7 @@
   <span class="md-ellipsis">
     
   
-    Java
+    Topics
   
 
     
@@ -606,6 +707,97 @@
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../topics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Topics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -700,10 +892,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
             
   
   
@@ -721,8 +913,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -789,10 +981,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
   
@@ -810,8 +1002,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -878,10 +1070,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
             
   
   
@@ -899,8 +1091,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
