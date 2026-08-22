@@ -90,7 +90,7 @@
   
   <meta property="article:published_time" content="2026-04-09" />
     
-  <meta property="article:modified_time" content="2026-04-09" />
+  <meta property="article:modified_time" content="2026-08-22" />
     
   <script type="application/ld+json">
   {
@@ -104,7 +104,7 @@
       "@id": "https://kicey.github.io/blog/2026/04/09/run-tun2socks-as-a-systemd-service-on-proxmox-vm-ubuntu-2404-ipv4--ipv6/"
     },
     "datePublished": "2026-04-09",
-    "dateModified": "2026-04-09",
+    "dateModified": "2026-08-22",
     "inLanguage": "en",
     "author": {
       "@type": "Person",
@@ -1498,9 +1498,9 @@
 <p>This avoids a short blackhole window where traffic is already routed to <code>tun0</code> but no process is reading packets yet.</p>
 <p>Example start command:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>sudo<span class="w"> </span>&lt;TUN2SOCKS_BIN&gt;<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span>-device<span class="w"> </span>tun0<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span>-proxy<span class="w"> </span>http://&lt;PROXY_HOST&gt;:&lt;PROXY_PORT&gt;<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span>-interface<span class="w"> </span>&lt;PRIMARY_IFACE&gt;
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span>--device<span class="w"> </span>tun0<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span>--proxy<span class="w"> </span>http://&lt;PROXY_HOST&gt;:&lt;PROXY_PORT&gt;<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span>--interface<span class="w"> </span>&lt;PRIMARY_IFACE&gt;
 </span></code></pre></div>
 <p>Then add preferred default route:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>sudo<span class="w"> </span>ip<span class="w"> </span>route<span class="w"> </span>add<span class="w"> </span>default<span class="w"> </span>via<span class="w"> </span><span class="m">198</span>.18.0.1<span class="w"> </span>dev<span class="w"> </span>tun0<span class="w"> </span>metric<span class="w"> </span><span class="m">1</span>
@@ -1512,7 +1512,7 @@
 </ul>
 <p>Why loop does not happen here:</p>
 <ul>
-<li><code>-interface &lt;PRIMARY_IFACE&gt;</code> forces outbound proxy sockets to use the physical NIC.</li>
+<li><code>--interface &lt;PRIMARY_IFACE&gt;</code> forces outbound proxy sockets to use the physical NIC.</li>
 <li>Proxy server is on local subnet (<code>&lt;LAN_SUBNET_CIDR&gt;</code>), so it matches the specific connected route first.</li>
 </ul>
 <hr />
@@ -1552,7 +1552,7 @@
 </span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">/usr/bin/ip route add default via 198.18.0.1 dev tun0 metric 1</span>
 </span><span id="__span-7-16"><a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">/usr/bin/ip -6 route add default dev tun0 metric 1</span>
 </span><span id="__span-7-17"><a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>
-</span><span id="__span-7-18"><a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a><span class="na">ExecStart</span><span class="o">=</span><span class="s">&lt;TUN2SOCKS_BIN&gt; -device tun0 -proxy http://&lt;PROXY_HOST&gt;:&lt;PROXY_PORT&gt; -interface &lt;PRIMARY_IFACE&gt;</span>
+</span><span id="__span-7-18"><a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a><span class="na">ExecStart</span><span class="o">=</span><span class="s">&lt;TUN2SOCKS_BIN&gt; --device tun0 --proxy http://&lt;PROXY_HOST&gt;:&lt;PROXY_PORT&gt; --interface &lt;PRIMARY_IFACE&gt;</span>
 </span><span id="__span-7-19"><a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a><span class="na">Restart</span><span class="o">=</span><span class="s">on-failure</span>
 </span><span id="__span-7-20"><a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a><span class="na">RestartSec</span><span class="o">=</span><span class="s">5</span>
 </span><span id="__span-7-21"><a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a><span class="na">LimitNOFILE</span><span class="o">=</span><span class="s">1048576</span>
