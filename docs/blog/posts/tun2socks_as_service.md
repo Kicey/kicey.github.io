@@ -86,9 +86,9 @@ Example start command:
 
 ```bash
 sudo <TUN2SOCKS_BIN> \
-	-device tun0 \
-	-proxy http://<PROXY_HOST>:<PROXY_PORT> \
-	-interface <PRIMARY_IFACE>
+	--device tun0 \
+	--proxy http://<PROXY_HOST>:<PROXY_PORT> \
+	--interface <PRIMARY_IFACE>
 ```
 
 Then add preferred default route:
@@ -104,7 +104,7 @@ Important adjustment:
 
 Why loop does not happen here:
 
-- `-interface <PRIMARY_IFACE>` forces outbound proxy sockets to use the physical NIC.
+- `--interface <PRIMARY_IFACE>` forces outbound proxy sockets to use the physical NIC.
 - Proxy server is on local subnet (`<LAN_SUBNET_CIDR>`), so it matches the specific connected route first.
 
 ------
@@ -163,7 +163,7 @@ ExecStartPre=/usr/bin/ip link set dev tun0 up
 ExecStartPre=/usr/bin/ip route add default via 198.18.0.1 dev tun0 metric 1
 ExecStartPre=/usr/bin/ip -6 route add default dev tun0 metric 1
 
-ExecStart=<TUN2SOCKS_BIN> -device tun0 -proxy http://<PROXY_HOST>:<PROXY_PORT> -interface <PRIMARY_IFACE>
+ExecStart=<TUN2SOCKS_BIN> --device tun0 --proxy http://<PROXY_HOST>:<PROXY_PORT> --interface <PRIMARY_IFACE>
 Restart=on-failure
 RestartSec=5
 LimitNOFILE=1048576
