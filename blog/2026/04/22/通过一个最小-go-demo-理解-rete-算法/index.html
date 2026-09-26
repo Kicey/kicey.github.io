@@ -12,7 +12,7 @@
         <meta name="author" content="kicey">
       
       
-        <link rel="canonical" href="https://kicey.github.io/blog/2026/04/22/%E9%80%9A%E8%BF%87%E4%B8%80%E4%B8%AA%E6%9C%80%E5%B0%8F-go-demo-%E7%90%86%E8%A7%A3-rete-%E7%AE%97%E6%B3%95/">
+        <link rel="canonical" href="https://github.kicey.site/blog/2026/04/22/%E9%80%9A%E8%BF%87%E4%B8%80%E4%B8%AA%E6%9C%80%E5%B0%8F-go-demo-%E7%90%86%E8%A7%A3-rete-%E7%AE%97%E6%B3%95/">
       
       
         <link rel="prev" href="../../09/run-tun2socks-as-a-systemd-service-on-proxmox-vm-ubuntu-2404-ipv4--ipv6/">
@@ -66,7 +66,11 @@
 
     
     
+  
   <meta name="google-site-verification" content="DaC7Ld_kS4qO1e4AxtoweuGG-EHZ7dTyKh2B-aPQokc" />
+  
+  <meta name="google-site-verification" content="_lG_6xZimsGUHMTnj61DvyVq53ArF1ywp2ASlvGrgO4" />
+  
   
   
   
@@ -77,19 +81,19 @@
   <meta property="og:site_name" content="kicey's blog" />
   <meta property="og:title" content="通过一个最小 Go Demo 理解 Rete 算法" />
   <meta property="og:description" content="基于一个最小 Go Demo 介绍 Rete 算法，重点说明事实如何在规则网络中传播，以及节点内存为何能显著提升匹配效率。" />
-  <meta property="og:url" content="https://kicey.github.io/blog/2026/04/22/%E9%80%9A%E8%BF%87%E4%B8%80%E4%B8%AA%E6%9C%80%E5%B0%8F-go-demo-%E7%90%86%E8%A7%A3-rete-%E7%AE%97%E6%B3%95/" />
-  <meta property="og:image" content="https://kicey.github.io/images/og.png" />
+  <meta property="og:url" content="https://github.kicey.site/blog/2026/04/22/%E9%80%9A%E8%BF%87%E4%B8%80%E4%B8%AA%E6%9C%80%E5%B0%8F-go-demo-%E7%90%86%E8%A7%A3-rete-%E7%AE%97%E6%B3%95/" />
+  <meta property="og:image" content="https://github.kicey.site/images/og.png" />
   <meta property="og:image:alt" content="kicey's blog — Practical notes about computer science, Linux, programming languages, virtualization, and systems engineering." />
   <meta property="og:locale" content="zh_CN" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="通过一个最小 Go Demo 理解 Rete 算法" />
   <meta name="twitter:description" content="基于一个最小 Go Demo 介绍 Rete 算法，重点说明事实如何在规则网络中传播，以及节点内存为何能显著提升匹配效率。" />
-  <meta name="twitter:image" content="https://kicey.github.io/images/og.png" />
+  <meta name="twitter:image" content="https://github.kicey.site/images/og.png" />
   
     
-  <link rel="alternate" hreflang="zh-Hans" href="https://kicey.github.io/blog/2026/04/22/%E9%80%9A%E8%BF%87%E4%B8%80%E4%B8%AA%E6%9C%80%E5%B0%8F-go-demo-%E7%90%86%E8%A7%A3-rete-%E7%AE%97%E6%B3%95/" />
+  <link rel="alternate" hreflang="zh-Hans" href="https://github.kicey.site/blog/2026/04/22/%E9%80%9A%E8%BF%87%E4%B8%80%E4%B8%AA%E6%9C%80%E5%B0%8F-go-demo-%E7%90%86%E8%A7%A3-rete-%E7%AE%97%E6%B3%95/" />
     
-  <link rel="alternate" hreflang="en" href="https://kicey.github.io/blog/2026/04/22/rete-algorithm-introduction-through-a-minimal-go-demo/" />
+  <link rel="alternate" hreflang="en" href="https://github.kicey.site/blog/2026/04/22/rete-algorithm-introduction-through-a-minimal-go-demo/" />
     
   
   
@@ -104,10 +108,10 @@
     "@type": "BlogPosting",
     "headline": "\u901a\u8fc7\u4e00\u4e2a\u6700\u5c0f Go Demo \u7406\u89e3 Rete \u7b97\u6cd5",
     "description": "\u57fa\u4e8e\u4e00\u4e2a\u6700\u5c0f Go Demo \u4ecb\u7ecd Rete \u7b97\u6cd5\uff0c\u91cd\u70b9\u8bf4\u660e\u4e8b\u5b9e\u5982\u4f55\u5728\u89c4\u5219\u7f51\u7edc\u4e2d\u4f20\u64ad\uff0c\u4ee5\u53ca\u8282\u70b9\u5185\u5b58\u4e3a\u4f55\u80fd\u663e\u8457\u63d0\u5347\u5339\u914d\u6548\u7387\u3002",
-    "url": "https://kicey.github.io/blog/2026/04/22/%E9%80%9A%E8%BF%87%E4%B8%80%E4%B8%AA%E6%9C%80%E5%B0%8F-go-demo-%E7%90%86%E8%A7%A3-rete-%E7%AE%97%E6%B3%95/",
+    "url": "https://github.kicey.site/blog/2026/04/22/%E9%80%9A%E8%BF%87%E4%B8%80%E4%B8%AA%E6%9C%80%E5%B0%8F-go-demo-%E7%90%86%E8%A7%A3-rete-%E7%AE%97%E6%B3%95/",
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "https://kicey.github.io/blog/2026/04/22/%E9%80%9A%E8%BF%87%E4%B8%80%E4%B8%AA%E6%9C%80%E5%B0%8F-go-demo-%E7%90%86%E8%A7%A3-rete-%E7%AE%97%E6%B3%95/"
+      "@id": "https://github.kicey.site/blog/2026/04/22/%E9%80%9A%E8%BF%87%E4%B8%80%E4%B8%AA%E6%9C%80%E5%B0%8F-go-demo-%E7%90%86%E8%A7%A3-rete-%E7%AE%97%E6%B3%95/"
     },
     "datePublished": "2026-04-22",
     "dateModified": "2026-04-22",
@@ -117,7 +121,7 @@
       "name": "kicey",
       "url": "https://github.com/Kicey"
     },
-    "image": "https://kicey.github.io/images/og.png"
+    "image": "https://github.kicey.site/images/og.png"
   }
   </script>
   
@@ -131,14 +135,14 @@
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "https://kicey.github.io/"
+        "item": "https://github.kicey.site/"
       },
       
       {
         "@type": "ListItem",
         "position": 2,
         "name": "\u901a\u8fc7\u4e00\u4e2a\u6700\u5c0f Go Demo \u7406\u89e3 Rete \u7b97\u6cd5",
-        "item": "https://kicey.github.io/blog/2026/04/22/%E9%80%9A%E8%BF%87%E4%B8%80%E4%B8%AA%E6%9C%80%E5%B0%8F-go-demo-%E7%90%86%E8%A7%A3-rete-%E7%AE%97%E6%B3%95/"
+        "item": "https://github.kicey.site/blog/2026/04/22/%E9%80%9A%E8%BF%87%E4%B8%80%E4%B8%AA%E6%9C%80%E5%B0%8F-go-demo-%E7%90%86%E8%A7%A3-rete-%E7%AE%97%E6%B3%95/"
       }
       
     ]
