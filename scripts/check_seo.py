@@ -3,14 +3,16 @@
 
 from __future__ import annotations
 
+import argparse
 from collections import Counter
 from datetime import date
 from html.parser import HTMLParser
 import json
 from pathlib import Path
-import sys
-from urllib.parse import urljoin
+from urllib.parse import unquote, urljoin, urlsplit
 import xml.etree.ElementTree as ET
+
+from mkdocs.config import load_config
 
 
 class PageParser(HTMLParser):
@@ -23,6 +25,7 @@ class PageParser(HTMLParser):
         self.json_ld: list[str] = []
         self.links: list[str] = []
         self.meta: dict[str, str] = {}
+        self.verification_tokens: set[str] = set()
         self.title = ""
         self._in_json_ld = False
         self._in_title = False
@@ -39,6 +42,8 @@ class PageParser(HTMLParser):
             key = values.get("name") or values.get("property")
             if key:
                 self.meta[key] = values.get("content", "")
+            if key == "google-site-verification":
+                self.verification_tokens.add(values.get("content", ""))
         elif tag == "link":
             rel = values.get("rel", "")
             if rel == "canonical":
@@ -70,13 +75,56 @@ def fail(errors: list[str], message: str) -> None:
     errors.append(message)
 
 
+def configured_extra_urls(config, errors: list[str]) -> set[str]:
+    sitemap = config.extra.get("sitemap", {})
+    if not isinstance(sitemap, dict) or not isinstance(sitemap.get("extra_urls", []), list):
+        fail(errors, "extra.sitemap.extra_urls must be a list of mappings")
+        return set()
+
+    urls: set[str] = set()
+    for entry in sitemap.get("extra_urls", []):
+        path = entry.get("path") if isinstance(entry, dict) else None
+        if (
+            not isinstance(path, str)
+            or not path.startswith("/")
+            or path.startswith("//")
+            or any(char in path for char in "?#\\")
+            or any(char.isspace() for char in path)
+            or any(part in (".", "..") for part in unquote(path).split("/"))
+        ):
+            fail(errors, f"invalid extra sitemap path: {path!r}; use a root-relative page path")
+            continue
+        location = urljoin(config.site_url, path.lstrip("/"))
+        if location in urls:
+            fail(errors, f"duplicate configured sitemap URL: {location}")
+        urls.add(location)
+    return urls
+
+
 def main() -> int:
-    site_dir = Path(sys.argv[1] if len(sys.argv) > 1 else "site").resolve()
+    arguments = argparse.ArgumentParser(description=__doc__)
+    arguments.add_argument("site_dir", nargs="?", help="Generated site directory")
+    arguments.add_argument(
+        "-f", "--config-file", type=Path,
+        default=Path(__file__).resolve().parents[1] / "mkdocs.yml",
+        help="MkDocs configuration to check against",
+    )
+    args = arguments.parse_args()
+    config = load_config(str(args.config_file))
+    homepage = config.site_url
+    site_dir = Path(args.site_dir or config.site_dir).resolve()
     if not site_dir.is_dir():
         print(f"SEO check failed: site directory does not exist: {site_dir}")
         return 2
 
     errors: list[str] = []
+    extra_urls = configured_extra_urls(config, errors)
+    verification_tokens = config.extra.get("google_site_verification", [])
+    if not isinstance(verification_tokens, list) or any(
+        not isinstance(token, str) or not token.strip() for token in verification_tokens
+    ):
+        fail(errors, "extra.google_site_verification must be a list of non-empty tokens")
+        verification_tokens = []
     pages: dict[str, tuple[Path, PageParser]] = {}
     title_counts: Counter[str] = Counter()
 
@@ -91,8 +139,17 @@ def main() -> int:
         pages[parser.canonical] = (html_file, parser)
         title_counts[parser.title.strip()] += 1
 
+    if homepage not in pages:
+        fail(errors, f"missing canonical homepage: {homepage}")
+    else:
+        missing_tokens = set(verification_tokens) - pages[homepage][1].verification_tokens
+        if missing_tokens:
+            fail(errors, f"homepage is missing {len(missing_tokens)} Google verification tag(s)")
+
     for canonical, (html_file, parser) in pages.items():
         label = html_file.relative_to(site_dir)
+        if not canonical.startswith(homepage):
+            fail(errors, f"{label}: canonical URL is outside site_url: {canonical}")
         if not parser.title.strip():
             fail(errors, f"{label}: missing title")
         if parser.h1_count != 1:
@@ -125,7 +182,7 @@ def main() -> int:
                     structured_types.add(structured_type)
             except json.JSONDecodeError as error:
                 fail(errors, f"{label}: invalid JSON-LD: {error}")
-        if canonical == "https://kicey.github.io/":
+        if canonical == homepage:
             if "WebSite" not in structured_types:
                 fail(errors, f"{label}: missing WebSite JSON-LD")
         else:
@@ -145,7 +202,6 @@ def main() -> int:
             if destination in pages and destination != source:
                 incoming[destination] += 1
 
-    homepage = "https://kicey.github.io/"
     for canonical in sorted(pages):
         if canonical != homepage and incoming[canonical] == 0:
             fail(errors, f"page has no internal incoming link: {canonical}")
@@ -176,6 +232,8 @@ def main() -> int:
                 fail(errors, "sitemap entry is missing loc")
                 continue
             location = location_node.text.strip()
+            if location in sitemap_urls:
+                fail(errors, f"duplicate sitemap URL: {location}")
             sitemap_urls.add(location)
             lastmod_node = url_node.find("s:lastmod", namespace)
             if lastmod_node is not None and lastmod_node.text:
@@ -186,12 +244,23 @@ def main() -> int:
                 except ValueError:
                     fail(errors, f"invalid sitemap lastmod: {location}")
 
-        missing = set(pages) - sitemap_urls
-        extra = sitemap_urls - set(pages)
+        missing = (set(pages) | extra_urls) - sitemap_urls
+        extra = sitemap_urls - set(pages) - extra_urls
         for location in sorted(missing):
-            fail(errors, f"canonical page missing from sitemap: {location}")
+            fail(errors, f"expected page missing from sitemap: {location}")
         for location in sorted(extra):
-            fail(errors, f"non-canonical URL in sitemap: {location}")
+            fail(errors, f"unexpected URL in sitemap: {location}")
+
+    robots_path = site_dir / "robots.txt"
+    sitemap_directive = f"Sitemap: {urljoin(homepage, 'sitemap.xml')}"
+    if not robots_path.is_file() or sitemap_directive not in robots_path.read_text().splitlines():
+        fail(errors, "robots.txt is missing the configured sitemap URL")
+
+    hostname = urlsplit(homepage).hostname
+    if hostname and not hostname.endswith(".github.io"):
+        cname_path = site_dir / "CNAME"
+        if not cname_path.is_file() or cname_path.read_text().strip() != hostname:
+            fail(errors, "CNAME does not match the configured custom domain")
 
     if errors:
         print(f"SEO check failed with {len(errors)} error(s):")
@@ -201,7 +270,8 @@ def main() -> int:
 
     print(
         f"SEO check passed: {len(pages)} canonical pages, "
-        "complete metadata, crawlable internal links, and a consistent sitemap."
+        f"{len(extra_urls)} configured project URLs, complete metadata, "
+        "crawlable internal links, and a consistent sitemap."
     )
     return 0
 

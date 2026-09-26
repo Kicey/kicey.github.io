@@ -23,4 +23,12 @@
     </url>
 {%- endif %}
 {%- endfor %}
+{%- for entry in config.extra.get('sitemap', {}).get('extra_urls', []) %}
+    <url>
+      <loc>{{ (config.site_url ~ entry.path.lstrip('/')) | e }}</loc>
+{%- if entry.lastmod %}
+      <lastmod>{{ entry.lastmod | e }}</lastmod>
+{%- endif %}
+    </url>
+{%- endfor %}
 </urlset>

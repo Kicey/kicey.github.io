@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
 {% block extrahead %}
-  <meta name="google-site-verification" content="DaC7Ld_kS4qO1e4AxtoweuGG-EHZ7dTyKh2B-aPQokc" />
+  {% for token in config.extra.google_site_verification | default([]) %}
+  <meta name="google-site-verification" content="{{ token | e }}" />
+  {% endfor %}
   {{ super() }}
   {% set seo_title = page.title | striptags if page and page.title else config.site_name %}
   {% set seo_description = page.meta.description if page and page.meta and page.meta.description else config.site_description %}

@@ -1,5 +1,5 @@
 site_name: kicey's blog
-site_url: https://kicey.github.io
+site_url: https://github.kicey.site/
 site_description: Practical notes about computer science, Linux, programming languages, virtualization, and systems engineering.
 site_author: kicey
 hooks:
@@ -76,3 +76,10 @@ nav:
 extra:
   author_url: https://github.com/Kicey
   social_image: images/og.png
+  google_site_verification:
+    - "DaC7Ld_kS4qO1e4AxtoweuGG-EHZ7dTyKh2B-aPQokc"
+    - "_lG_6xZimsGUHMTnj61DvyVq53ArF1ywp2ASlvGrgO4"
+  sitemap:
+    extra_urls:
+      - path: /base64-family-codec/
+      - path: /quartz_cron_utility/

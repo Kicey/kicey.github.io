@@ -10,7 +10,7 @@ from html import unescape
 from pathlib import Path
 import re
 import subprocess
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlsplit
 
 
 _CJK_RE = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff]")
@@ -180,3 +180,16 @@ def on_post_page(output, page, config):
         output,
         count=1,
     )
+
+
+def on_post_build(config):
+    """Keep crawler discovery and the Pages custom domain aligned with site_url."""
+
+    site_dir = Path(config.site_dir)
+    sitemap_url = _absolute_url(config.site_url, "sitemap.xml")
+    (site_dir / "robots.txt").write_text(
+        f"User-agent: *\nAllow: /\n\nSitemap: {sitemap_url}\n", encoding="utf-8"
+    )
+    hostname = urlsplit(config.site_url).hostname
+    if hostname and not hostname.endswith(".github.io"):
+        (site_dir / "CNAME").write_text(f"{hostname}\n", encoding="utf-8")

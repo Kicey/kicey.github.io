@@ -2,9 +2,10 @@
 .idea/
 .vscode/
 
-# Python virtual environments
+# Python virtual environments and bytecode
 /venv/
 /.venv/
+__pycache__/
 
 # Generated site output
 /site/
