@@ -81,5 +81,5 @@ extra:
     - "_lG_6xZimsGUHMTnj61DvyVq53ArF1ywp2ASlvGrgO4"
   sitemap:
     extra_urls:
-      - path: /base64-family-codec/
+      - path: /base64_family_codec/
       - path: /quartz_cron_utility/
