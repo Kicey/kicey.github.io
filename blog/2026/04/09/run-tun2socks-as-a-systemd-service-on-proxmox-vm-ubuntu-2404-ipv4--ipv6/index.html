@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="A practical tun2socks setup on an Ubuntu Proxmox VM, including safe routing, systemd persistence, IPv6 support, and troubleshooting notes from a full rehearsal.">
+        <meta name="description" content="Run tun2socks with an external proxy or local v2rayA Docker container, using systemd and policy routing to prevent routing loops.">
       
       
         <meta name="author" content="kicey">
@@ -80,35 +80,35 @@
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="kicey's blog" />
   <meta property="og:title" content="Run tun2socks as a systemd Service on Proxmox VM (Ubuntu 24.04, IPv4 + IPv6)" />
-  <meta property="og:description" content="A practical tun2socks setup on an Ubuntu Proxmox VM, including safe routing, systemd persistence, IPv6 support, and troubleshooting notes from a full rehearsal." />
+  <meta property="og:description" content="Run tun2socks with an external proxy or local v2rayA Docker container, using systemd and policy routing to prevent routing loops." />
   <meta property="og:url" content="https://github.kicey.site/blog/2026/04/09/run-tun2socks-as-a-systemd-service-on-proxmox-vm-ubuntu-2404-ipv4--ipv6/" />
   <meta property="og:image" content="https://github.kicey.site/images/og.png" />
   <meta property="og:image:alt" content="kicey's blog — Practical notes about computer science, Linux, programming languages, virtualization, and systems engineering." />
   <meta property="og:locale" content="en_US" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Run tun2socks as a systemd Service on Proxmox VM (Ubuntu 24.04, IPv4 + IPv6)" />
-  <meta name="twitter:description" content="A practical tun2socks setup on an Ubuntu Proxmox VM, including safe routing, systemd persistence, IPv6 support, and troubleshooting notes from a full rehearsal." />
+  <meta name="twitter:description" content="Run tun2socks with an external proxy or local v2rayA Docker container, using systemd and policy routing to prevent routing loops." />
   <meta name="twitter:image" content="https://github.kicey.site/images/og.png" />
   
   
   
   <meta property="article:published_time" content="2026-04-09" />
     
-  <meta property="article:modified_time" content="2026-08-22" />
+  <meta property="article:modified_time" content="2026-09-30" />
     
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     "headline": "Run tun2socks as a systemd Service on Proxmox VM (Ubuntu 24.04, IPv4 + IPv6)",
-    "description": "A practical tun2socks setup on an Ubuntu Proxmox VM, including safe routing, systemd persistence, IPv6 support, and troubleshooting notes from a full rehearsal.",
+    "description": "Run tun2socks with an external proxy or local v2rayA Docker container, using systemd and policy routing to prevent routing loops.",
     "url": "https://github.kicey.site/blog/2026/04/09/run-tun2socks-as-a-systemd-service-on-proxmox-vm-ubuntu-2404-ipv4--ipv6/",
     "mainEntityOfPage": {
       "@type": "WebPage",
       "@id": "https://github.kicey.site/blog/2026/04/09/run-tun2socks-as-a-systemd-service-on-proxmox-vm-ubuntu-2404-ipv4--ipv6/"
     },
     "datePublished": "2026-04-09",
-    "dateModified": "2026-08-22",
+    "dateModified": "2026-09-30",
     "inLanguage": "en",
     "author": {
       "@type": "Person",
@@ -1186,10 +1186,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-start-tun2socks-first-then-route" class="md-nav__link">
+  <a href="#3-external-proxy-start-tun2socks-first-then-route" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Start tun2socks First, Then Route
+        3. External Proxy: Start tun2socks First, Then Route
       
     </span>
   </a>
@@ -1219,10 +1219,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-full-systemd-unit-dual-stack-ipv4-ipv6" class="md-nav__link">
+  <a href="#6-external-proxy-full-systemd-unit-ipv4-ipv6" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Full systemd Unit (Dual-Stack IPv4 + IPv6)
+        6. External Proxy: Full systemd Unit (IPv4 + IPv6)
       
     </span>
   </a>
@@ -1230,10 +1230,82 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#7-verify-after-start-and-after-reboot" class="md-nav__link">
+  <a href="#7-local-proxy-v2raya-in-docker-without-a-routing-loop" class="md-nav__link">
     <span class="md-ellipsis">
       
-        7. Verify After Start and After Reboot
+        7. Local Proxy: v2rayA in Docker Without a Routing Loop
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Local Proxy: v2rayA in Docker Without a Routing Loop">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-binding-tun2socks-alone-is-insufficient" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why binding tun2socks alone is insufficient
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#give-v2raya-a-stable-docker-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Give v2rayA a stable Docker network
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-the-complete-local-proxy-unit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install the complete local-proxy unit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-both-routing-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verify both routing paths
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ipv6-and-udp-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IPv6 and UDP scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-verify-after-start-and-after-reboot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Verify After Start and After Reboot
       
     </span>
   </a>
@@ -1241,15 +1313,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#8-faq-from-the-rehearsal" class="md-nav__link">
+  <a href="#9-faq-from-the-rehearsal" class="md-nav__link">
     <span class="md-ellipsis">
       
-        8. FAQ From the Rehearsal
+        9. FAQ From the Rehearsal
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="8. FAQ From the Rehearsal">
+    <nav class="md-nav" aria-label="9. FAQ From the Rehearsal">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1357,10 +1429,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#9-what-this-post-does-not-cover-yet" class="md-nav__link">
+  <a href="#10-what-this-post-does-not-cover-yet" class="md-nav__link">
     <span class="md-ellipsis">
       
-        9. What This Post Does Not Cover Yet
+        10. What This Post Does Not Cover Yet
       
     </span>
   </a>
@@ -1442,7 +1514,27 @@
 <h1 id="run-tun2socks-as-a-systemd-service-on-proxmox-vm-ubuntu-2404-ipv4-ipv6">Run tun2socks as a systemd Service on Proxmox VM (Ubuntu 24.04, IPv4 + IPv6)</h1>
 <!-- more -->
 
-<p>This post is a cleaned-up tutorial from a full command rehearsal.</p>
+<p>This post combines the original Ubuntu VM rehearsal with a later debugging session that fixed a routing loop when v2rayA ran in Docker on the same host.</p>
+<p>There are two setups:</p>
+<table>
+<thead>
+<tr>
+<th>Proxy location</th>
+<th>How its outbound traffic avoids <code>tun0</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Outside the host</strong>, on another LAN machine</td>
+<td>Bind tun2socks sockets to the primary NIC; the proxy also has a connected LAN route.</td>
+</tr>
+<tr>
+<td><strong>Inside the host</strong>, in a v2rayA Docker container</td>
+<td>Give the container a stable bridge subnet and select a separate routing table for that subnet.</td>
+</tr>
+</tbody>
+</table>
+<p>Sections 2–6 describe the external proxy. For local v2rayA, follow section 7 and use its complete replacement unit. Here, “host” means the Linux machine running tun2socks, which may itself be a Proxmox VM.</p>
 <p>Environment used in rehearsal:</p>
 <ul>
 <li>VM OS: Ubuntu 24.04.3 LTS</li>
@@ -1456,18 +1548,19 @@
 <li><code>&lt;LAN_GATEWAY_IP&gt;</code>: your LAN gateway (for example <code>192.168.1.1</code>)</li>
 <li><code>&lt;PROXY_HOST&gt;</code> / <code>&lt;PROXY_PORT&gt;</code>: your proxy endpoint</li>
 <li><code>&lt;LAN_SUBNET_CIDR&gt;</code>: your LAN subnet (for example <code>192.168.1.0/24</code>)</li>
-<li><code>&lt;TUN2SOCKS_BIN&gt;</code>: absolute path to <code>tun2socks</code> (or just <code>tun2socks</code> if in PATH)</li>
+<li><code>&lt;TUN2SOCKS_BIN&gt;</code>: absolute path to <code>tun2socks</code> (for example <code>/usr/local/bin/tun2socks</code>)</li>
 </ul>
-<!-- more -->
-
+<p>Replace all angle-bracket placeholders before running commands or saving a unit. The local-proxy example keeps the tested Docker subnet <code>172.30.0.0/24</code>, bridge <code>br-v2raya</code>, and routing table <code>200</code>; adapt them consistently if they conflict with your network.</p>
 <p>The official wiki is a good starting point, but this walkthrough adds some practical adjustments for stability on reboot and safer route handling.</p>
 <hr />
 <h2 id="1-check-current-network-state">1. Check Current Network State</h2>
-<p>Run these first:</p>
+<p>These commands only inspect the OS, interfaces, routes, and forwarding setting:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>cat<span class="w"> </span>/etc/os-release
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>ip<span class="w"> </span>addr<span class="w"> </span>show
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>ip<span class="w"> </span>route<span class="w"> </span>show
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>sysctl<span class="w"> </span>net.ipv4.ip_forward
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>ip<span class="w"> </span>-6<span class="w"> </span>route<span class="w"> </span>show
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>ip<span class="w"> </span>rule<span class="w"> </span>show
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>sysctl<span class="w"> </span>net.ipv4.ip_forward
 </span></code></pre></div>
 <p>In our rehearsal, the important facts were:</p>
 <ul>
@@ -1477,6 +1570,7 @@
 </ul>
 <hr />
 <h2 id="2-create-tun-device">2. Create TUN Device</h2>
+<p>For the external-proxy manual test, these commands create <code>tun0</code>, assign its IPv4 address, and bring the interface up:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>sudo<span class="w"> </span>ip<span class="w"> </span>tuntap<span class="w"> </span>add<span class="w"> </span>mode<span class="w"> </span>tun<span class="w"> </span>dev<span class="w"> </span>tun0
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>sudo<span class="w"> </span>ip<span class="w"> </span>addr<span class="w"> </span>add<span class="w"> </span><span class="m">198</span>.18.0.1/24<span class="w"> </span>dev<span class="w"> </span>tun0
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>sudo<span class="w"> </span>ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>dev<span class="w"> </span>tun0<span class="w"> </span>up
@@ -1493,20 +1587,20 @@
 <li>Do not omit CIDR mask when assigning an address.</li>
 </ul>
 <hr />
-<h2 id="3-start-tun2socks-first-then-route">3. Start tun2socks First, Then Route</h2>
+<h2 id="3-external-proxy-start-tun2socks-first-then-route">3. External Proxy: Start tun2socks First, Then Route</h2>
 <p>Prefer this order:</p>
 <ol>
 <li>Start <code>tun2socks</code></li>
 <li>Add route to <code>tun0</code></li>
 </ol>
 <p>This avoids a short blackhole window where traffic is already routed to <code>tun0</code> but no process is reading packets yet.</p>
-<p>Example start command:</p>
+<p>The proxy must already be reachable on another LAN machine. <code>--device</code> selects the TUN interface, <code>--proxy</code> selects the HTTP CONNECT endpoint, and <code>--interface</code> binds outbound proxy sockets to the physical NIC:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>sudo<span class="w"> </span>&lt;TUN2SOCKS_BIN&gt;<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span>--device<span class="w"> </span>tun0<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span>--proxy<span class="w"> </span>http://&lt;PROXY_HOST&gt;:&lt;PROXY_PORT&gt;<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span>--interface<span class="w"> </span>&lt;PRIMARY_IFACE&gt;
 </span></code></pre></div>
-<p>Then add preferred default route:</p>
+<p>Keep tun2socks running in that terminal. In a second terminal, add the preferred default route; the lower <code>metric 1</code> makes it preferred over the existing default:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>sudo<span class="w"> </span>ip<span class="w"> </span>route<span class="w"> </span>add<span class="w"> </span>default<span class="w"> </span>via<span class="w"> </span><span class="m">198</span>.18.0.1<span class="w"> </span>dev<span class="w"> </span>tun0<span class="w"> </span>metric<span class="w"> </span><span class="m">1</span>
 </span></code></pre></div>
 <p>Important adjustment:</p>
@@ -1514,21 +1608,30 @@
 <li>Do not delete the original DHCP default route unless you really need to.</li>
 <li>Keeping the original DHCP route (<code>metric 100</code>) is more robust.</li>
 </ul>
-<p>Why loop does not happen here:</p>
+<p>Why a loop does not happen in this external-proxy setup:</p>
 <ul>
 <li><code>--interface &lt;PRIMARY_IFACE&gt;</code> forces outbound proxy sockets to use the physical NIC.</li>
 <li>Proxy server is on local subnet (<code>&lt;LAN_SUBNET_CIDR&gt;</code>), so it matches the specific connected route first.</li>
 </ul>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>Host application → tun0 → tun2socks → physical NIC → LAN proxy → Internet
+</span></code></pre></div>
+<p>The proxy's own Internet connection is made on another machine. Moving that proxy into Docker on this host changes the routing problem: <code>--interface</code> controls tun2socks sockets, not the container's separate connections. See section 7.</p>
+<p>After the manual test, remove only the route and device created above before starting the systemd service:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>sudo<span class="w"> </span>ip<span class="w"> </span>route<span class="w"> </span>del<span class="w"> </span>default<span class="w"> </span>via<span class="w"> </span><span class="m">198</span>.18.0.1<span class="w"> </span>dev<span class="w"> </span>tun0<span class="w"> </span>metric<span class="w"> </span><span class="m">1</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="c1"># Stop the foreground tun2socks process with Ctrl+C in its terminal.</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>sudo<span class="w"> </span>ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>dev<span class="w"> </span>tun0<span class="w"> </span>down
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>sudo<span class="w"> </span>ip<span class="w"> </span>tuntap<span class="w"> </span>del<span class="w"> </span>mode<span class="w"> </span>tun<span class="w"> </span>dev<span class="w"> </span>tun0
+</span></code></pre></div>
 <hr />
 <h2 id="4-rp_filter-usually-no-change-needed">4. rp_filter: Usually No Change Needed</h2>
 <p>Check:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>sysctl<span class="w"> </span>net.ipv4.conf.all.rp_filter
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>sysctl<span class="w"> </span>net.ipv4.conf.&lt;PRIMARY_IFACE&gt;.rp_filter
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>sysctl<span class="w"> </span>net.ipv4.conf.all.rp_filter
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>sysctl<span class="w"> </span>net.ipv4.conf.&lt;PRIMARY_IFACE&gt;.rp_filter
 </span></code></pre></div>
 <p>In our case both were <code>2</code> (loose mode), which is usually enough.</p>
 <p>So we did not need:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>sysctl<span class="w"> </span>net.ipv4.conf.all.rp_filter<span class="o">=</span><span class="m">0</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>sysctl<span class="w"> </span>net.ipv4.conf.&lt;PRIMARY_IFACE&gt;.rp_filter<span class="o">=</span><span class="m">0</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>sysctl<span class="w"> </span>net.ipv4.conf.all.rp_filter<span class="o">=</span><span class="m">0</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>sysctl<span class="w"> </span>net.ipv4.conf.&lt;PRIMARY_IFACE&gt;.rp_filter<span class="o">=</span><span class="m">0</span>
 </span></code></pre></div>
 <p>Use <code>0</code> only if you have a confirmed routing issue that requires it.</p>
 <hr />
@@ -1537,52 +1640,241 @@
 <p>That state is not persisted automatically across reboot.</p>
 <p>So even if <code>tun2socks</code> is enabled as a service, the TUN device and custom routes will disappear unless you recreate them at service startup.</p>
 <hr />
-<h2 id="6-full-systemd-unit-dual-stack-ipv4-ipv6">6. Full systemd Unit (Dual-Stack IPv4 + IPv6)</h2>
-<p>Create <code>/etc/systemd/system/tun2socks.service</code>:</p>
-<div class="language-ini highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">[Unit]</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="na">Description</span><span class="o">=</span><span class="s">tun2socks transparent proxy daemon (Dual-Stack IPv4/IPv6)</span>
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="na">After</span><span class="o">=</span><span class="s">network-online.target</span>
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="na">Wants</span><span class="o">=</span><span class="s">network-online.target</span>
-</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>
-</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="k">[Service]</span>
-</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="na">Type</span><span class="o">=</span><span class="s">simple</span>
-</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="na">User</span><span class="o">=</span><span class="s">root</span>
-</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>
-</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="c1"># Startup phase</span>
-</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">-/usr/bin/ip tuntap add mode tun dev tun0</span>
-</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">/usr/bin/ip addr add 198.18.0.1/24 dev tun0</span>
-</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">/usr/bin/ip -6 addr add fdfe::1/128 dev tun0</span>
-</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">/usr/bin/ip link set dev tun0 up</span>
-</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">/usr/bin/ip route add default via 198.18.0.1 dev tun0 metric 1</span>
-</span><span id="__span-7-16"><a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">/usr/bin/ip -6 route add default dev tun0 metric 1</span>
-</span><span id="__span-7-17"><a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>
-</span><span id="__span-7-18"><a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a><span class="na">ExecStart</span><span class="o">=</span><span class="s">&lt;TUN2SOCKS_BIN&gt; --device tun0 --proxy http://&lt;PROXY_HOST&gt;:&lt;PROXY_PORT&gt; --interface &lt;PRIMARY_IFACE&gt;</span>
-</span><span id="__span-7-19"><a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a><span class="na">Restart</span><span class="o">=</span><span class="s">on-failure</span>
-</span><span id="__span-7-20"><a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a><span class="na">RestartSec</span><span class="o">=</span><span class="s">5</span>
-</span><span id="__span-7-21"><a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a><span class="na">LimitNOFILE</span><span class="o">=</span><span class="s">1048576</span>
-</span><span id="__span-7-22"><a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a>
-</span><span id="__span-7-23"><a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a><span class="c1"># Teardown phase</span>
-</span><span id="__span-7-24"><a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a><span class="na">ExecStopPost</span><span class="o">=</span><span class="s">-/usr/bin/ip route del default via 198.18.0.1 dev tun0 metric 1</span>
-</span><span id="__span-7-25"><a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a><span class="na">ExecStopPost</span><span class="o">=</span><span class="s">-/usr/bin/ip -6 route del default dev tun0 metric 1</span>
-</span><span id="__span-7-26"><a id="__codelineno-7-26" name="__codelineno-7-26" href="#__codelineno-7-26"></a><span class="na">ExecStopPost</span><span class="o">=</span><span class="s">-/usr/bin/ip link set dev tun0 down</span>
-</span><span id="__span-7-27"><a id="__codelineno-7-27" name="__codelineno-7-27" href="#__codelineno-7-27"></a><span class="na">ExecStopPost</span><span class="o">=</span><span class="s">-/usr/bin/ip tuntap del mode tun dev tun0</span>
-</span><span id="__span-7-28"><a id="__codelineno-7-28" name="__codelineno-7-28" href="#__codelineno-7-28"></a>
-</span><span id="__span-7-29"><a id="__codelineno-7-29" name="__codelineno-7-29" href="#__codelineno-7-29"></a><span class="k">[Install]</span>
-</span><span id="__span-7-30"><a id="__codelineno-7-30" name="__codelineno-7-30" href="#__codelineno-7-30"></a><span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
+<h2 id="6-external-proxy-full-systemd-unit-ipv4-ipv6">6. External Proxy: Full systemd Unit (IPv4 + IPv6)</h2>
+<p>Create <code>/etc/systemd/system/tun2socks.service</code> with the following unit. It owns <code>tun0</code> and adds only the TUN defaults, leaving the physical defaults in place. For local v2rayA, use the alternative in section 7 instead.</p>
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="k">[Unit]</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="na">Description</span><span class="o">=</span><span class="s">tun2socks transparent proxy daemon (Dual-Stack IPv4/IPv6)</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="na">After</span><span class="o">=</span><span class="s">network-online.target</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="na">Wants</span><span class="o">=</span><span class="s">network-online.target</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="k">[Service]</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="na">Type</span><span class="o">=</span><span class="s">simple</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="na">User</span><span class="o">=</span><span class="s">root</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="c1"># Startup phase</span>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">-/usr/bin/ip tuntap add mode tun dev tun0</span>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">/usr/bin/ip addr add 198.18.0.1/24 dev tun0</span>
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">/usr/bin/ip -6 addr add fdfe::1/128 dev tun0</span>
+</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">/usr/bin/ip link set dev tun0 up</span>
+</span><span id="__span-9-15"><a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">/usr/bin/ip route add default via 198.18.0.1 dev tun0 metric 1</span>
+</span><span id="__span-9-16"><a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">/usr/bin/ip -6 route add default dev tun0 metric 1</span>
+</span><span id="__span-9-17"><a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a>
+</span><span id="__span-9-18"><a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a><span class="na">ExecStart</span><span class="o">=</span><span class="s">&lt;TUN2SOCKS_BIN&gt; --device tun0 --proxy http://&lt;PROXY_HOST&gt;:&lt;PROXY_PORT&gt; --interface &lt;PRIMARY_IFACE&gt;</span>
+</span><span id="__span-9-19"><a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a><span class="na">Restart</span><span class="o">=</span><span class="s">on-failure</span>
+</span><span id="__span-9-20"><a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a><span class="na">RestartSec</span><span class="o">=</span><span class="s">5</span>
+</span><span id="__span-9-21"><a id="__codelineno-9-21" name="__codelineno-9-21" href="#__codelineno-9-21"></a><span class="na">LimitNOFILE</span><span class="o">=</span><span class="s">1048576</span>
+</span><span id="__span-9-22"><a id="__codelineno-9-22" name="__codelineno-9-22" href="#__codelineno-9-22"></a>
+</span><span id="__span-9-23"><a id="__codelineno-9-23" name="__codelineno-9-23" href="#__codelineno-9-23"></a><span class="c1"># Teardown phase</span>
+</span><span id="__span-9-24"><a id="__codelineno-9-24" name="__codelineno-9-24" href="#__codelineno-9-24"></a><span class="na">ExecStopPost</span><span class="o">=</span><span class="s">-/usr/bin/ip route del default via 198.18.0.1 dev tun0 metric 1</span>
+</span><span id="__span-9-25"><a id="__codelineno-9-25" name="__codelineno-9-25" href="#__codelineno-9-25"></a><span class="na">ExecStopPost</span><span class="o">=</span><span class="s">-/usr/bin/ip -6 route del default dev tun0 metric 1</span>
+</span><span id="__span-9-26"><a id="__codelineno-9-26" name="__codelineno-9-26" href="#__codelineno-9-26"></a><span class="na">ExecStopPost</span><span class="o">=</span><span class="s">-/usr/bin/ip link set dev tun0 down</span>
+</span><span id="__span-9-27"><a id="__codelineno-9-27" name="__codelineno-9-27" href="#__codelineno-9-27"></a><span class="na">ExecStopPost</span><span class="o">=</span><span class="s">-/usr/bin/ip tuntap del mode tun dev tun0</span>
+</span><span id="__span-9-28"><a id="__codelineno-9-28" name="__codelineno-9-28" href="#__codelineno-9-28"></a>
+</span><span id="__span-9-29"><a id="__codelineno-9-29" name="__codelineno-9-29" href="#__codelineno-9-29"></a><span class="k">[Install]</span>
+</span><span id="__span-9-30"><a id="__codelineno-9-30" name="__codelineno-9-30" href="#__codelineno-9-30"></a><span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
 </span></code></pre></div>
-<p>Apply:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>daemon-reload
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>tun2socks
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>tun2socks
+<p>Apply the unit: <code>daemon-reload</code> rereads unit files, <code>enable --now</code> enables startup at boot and starts the service, and <code>status</code> inspects it. If the service is already running, use <code>sudo systemctl restart tun2socks</code> after reloading to apply edits.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>daemon-reload
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>tun2socks
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>tun2socks
 </span></code></pre></div>
 <p>The <code>-</code> prefix in some <code>ExecStartPre</code>/<code>ExecStopPost</code> lines means: ignore non-zero exit for that command.</p>
+<p>These units install default routes in <code>ExecStartPre</code>, so startup or restart can briefly interrupt traffic before the daemon is ready. <code>ExecStopPost</code> removes the TUN routes and device when the service stops, including after startup failure.</p>
 <hr />
-<h2 id="7-verify-after-start-and-after-reboot">7. Verify After Start and After Reboot</h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>ip<span class="w"> </span>addr<span class="w"> </span>show<span class="w"> </span>dev<span class="w"> </span>tun0
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>ip<span class="w"> </span>route<span class="w"> </span>show
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>ip<span class="w"> </span>-6<span class="w"> </span>route<span class="w"> </span>show
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>systemctl<span class="w"> </span>is-active<span class="w"> </span>tun2socks
-</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>journalctl<span class="w"> </span>-u<span class="w"> </span>tun2socks<span class="w"> </span>-n<span class="w"> </span><span class="m">50</span><span class="w"> </span>--no-pager
+<h2 id="7-local-proxy-v2raya-in-docker-without-a-routing-loop">7. Local Proxy: v2rayA in Docker Without a Routing Loop</h2>
+<h3 id="why-binding-tun2socks-alone-is-insufficient">Why binding tun2socks alone is insufficient</h3>
+<p>With <code>--proxy http://127.0.0.1:10809</code>, tun2socks reaches a Docker-published v2rayA port. The proxy then opens its own connection to an upstream server. Without an exception, the host forwards that container traffic using the preferred default route through <code>tun0</code>:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>Host application → tun0 → tun2socks → localhost:10809 → v2rayA container
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>                          ↑                                  │
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>                          └──────── tun0 ← host routing ←────┘
+</span></code></pre></div>
+<p>That is the recursion: the proxy's outbound connection is fed back into the proxy. A working localhost listener does not prevent it, and changing only tun2socks' <code>--interface</code> cannot control v2rayA's sockets.</p>
+<p>The fix is <strong>source-based policy routing</strong>: traffic from the dedicated v2rayA subnet uses table <code>200</code>, whose default points to the physical gateway. Ordinary host traffic continues to use the main table and <code>tun0</code>.</p>
+<h3 id="give-v2raya-a-stable-docker-network">Give v2rayA a stable Docker network</h3>
+<p>Use this <code>docker-compose.yaml</code>. It preserves the version and port mappings used during debugging:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nt">services</span><span class="p">:</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">  </span><span class="nt">v2raya</span><span class="p">:</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mzz2017/v2raya:v2.5.7</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v2raya</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;2017:2017&quot;</span>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;10808-10810:10808-10810&quot;</span>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">V2RAYA_LOG_FILE=/tmp/v2raya.log</span>
+</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./etc/v2raya:/etc/v2raya</span>
+</span><span id="__span-12-13"><a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/localtime:/etc/localtime:ro</span>
+</span><span id="__span-12-14"><a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/lib/modules:/lib/modules:ro</span>
+</span><span id="__span-12-15"><a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a><span class="w">    </span><span class="nt">networks</span><span class="p">:</span>
+</span><span id="__span-12-16"><a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v2raya_direct</span>
+</span><span id="__span-12-17"><a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a>
+</span><span id="__span-12-18"><a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a><span class="nt">networks</span><span class="p">:</span>
+</span><span id="__span-12-19"><a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a><span class="w">  </span><span class="nt">v2raya_direct</span><span class="p">:</span>
+</span><span id="__span-12-20"><a id="__codelineno-12-20" name="__codelineno-12-20" href="#__codelineno-12-20"></a><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v2raya_direct</span>
+</span><span id="__span-12-21"><a id="__codelineno-12-21" name="__codelineno-12-21" href="#__codelineno-12-21"></a><span class="w">    </span><span class="nt">driver</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bridge</span>
+</span><span id="__span-12-22"><a id="__codelineno-12-22" name="__codelineno-12-22" href="#__codelineno-12-22"></a><span class="w">    </span><span class="nt">driver_opts</span><span class="p">:</span>
+</span><span id="__span-12-23"><a id="__codelineno-12-23" name="__codelineno-12-23" href="#__codelineno-12-23"></a><span class="w">      </span><span class="nt">com.docker.network.bridge.name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">br-v2raya</span>
+</span><span id="__span-12-24"><a id="__codelineno-12-24" name="__codelineno-12-24" href="#__codelineno-12-24"></a><span class="w">    </span><span class="nt">ipam</span><span class="p">:</span>
+</span><span id="__span-12-25"><a id="__codelineno-12-25" name="__codelineno-12-25" href="#__codelineno-12-25"></a><span class="w">      </span><span class="nt">config</span><span class="p">:</span>
+</span><span id="__span-12-26"><a id="__codelineno-12-26" name="__codelineno-12-26" href="#__codelineno-12-26"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">subnet</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.30.0.0/24</span>
+</span><span id="__span-12-27"><a id="__codelineno-12-27" name="__codelineno-12-27" href="#__codelineno-12-27"></a><span class="w">          </span><span class="nt">gateway</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.30.0.1</span>
+</span></code></pre></div>
+<p>The subnet and bridge name remain predictable after network recreation; the container's final IP octet may change. Docker supports both <a href="https://docs.docker.com/reference/compose-file/networks/#ipam">Compose IPAM configuration</a> and an <a href="https://docs.docker.com/engine/network/drivers/bridge/#options">explicit bridge name</a>. Keep this network dedicated to v2rayA because every container on it receives the routing exemption. Use bridge networking for this recipe; <code>network_mode: host</code> would remove the source-subnet distinction.</p>
+<p>These mappings publish TCP ports on all host interfaces. For host-only access, use <code>127.0.0.1:2017:2017</code> and <code>127.0.0.1:10808-10810:10808-10810</code> instead. The examples below assume v2rayA already has a working upstream and an HTTP CONNECT proxy listening on container port <code>10809</code>.</p>
+<p>In the Compose directory, validate without starting anything:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>config
+</span></code></pre></div>
+<p>For an existing installation, stop tun2socks before recreating the Docker network. The following interrupts both proxies; <code>down</code> removes this Compose project's containers and network but preserves the bind-mounted <code>./etc/v2raya</code> configuration. <code>up -d</code> recreates them in the background. For a fresh installation, only <code>up -d</code> is needed.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>stop<span class="w"> </span>tun2socks
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>docker<span class="w"> </span>compose<span class="w"> </span>down
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
+</span></code></pre></div>
+<p>Check the assigned address and bridge before installing the unit:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>docker<span class="w"> </span>inspect<span class="w"> </span>-f<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="w">  </span><span class="s1">&#39;{{range .NetworkSettings.Networks}}IP={{.IPAddress}} Gateway={{.Gateway}}{{end}}&#39;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="w">  </span>v2raya
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>ip<span class="w"> </span>link<span class="w"> </span>show<span class="w"> </span>dev<span class="w"> </span>br-v2raya
+</span></code></pre></div>
+<p>An example result is <code>IP=172.30.0.2 Gateway=172.30.0.1</code>. Use the actual container IP in later diagnostics. Docker forwarding must be enabled (<code>net.ipv4.ip_forward = 1</code>); its bridge networking normally supplies the forwarding and masquerading rules.</p>
+<h3 id="install-the-complete-local-proxy-unit">Install the complete local-proxy unit</h3>
+<p>Reserve routing table <code>200</code> and rule priority <code>100</code> for this service. Inspect <code>ip rule show</code> and <code>ip route show table 200</code> first; an unused table may be reported as absent. The unit flushes <strong>all routes in table 200</strong>, so choose another unused table if it already belongs to a VPN or other service.</p>
+<p>Replace <code>/etc/systemd/system/tun2socks.service</code> with this alternative. Substitute the same placeholders as before. The tested physical network used <code>wlp6s0</code>, LAN <code>192.168.101.0/24</code>, and gateway <code>192.168.101.1</code>.</p>
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="k">[Unit]</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="na">Description</span><span class="o">=</span><span class="s">tun2socks with direct egress for local v2rayA (IPv4/IPv6)</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="na">After</span><span class="o">=</span><span class="s">network-online.target docker.service</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="na">Wants</span><span class="o">=</span><span class="s">network-online.target</span>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="na">Requires</span><span class="o">=</span><span class="s">docker.service</span>
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="k">[Service]</span>
+</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a><span class="na">Type</span><span class="o">=</span><span class="s">simple</span>
+</span><span id="__span-16-9"><a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a><span class="na">User</span><span class="o">=</span><span class="s">root</span>
+</span><span id="__span-16-10"><a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a>
+</span><span id="__span-16-11"><a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a><span class="c1"># The Compose network must exist before its routes can be installed.</span>
+</span><span id="__span-16-12"><a id="__codelineno-16-12" name="__codelineno-16-12" href="#__codelineno-16-12"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">/usr/bin/ip link show dev br-v2raya</span>
+</span><span id="__span-16-13"><a id="__codelineno-16-13" name="__codelineno-16-13" href="#__codelineno-16-13"></a>
+</span><span id="__span-16-14"><a id="__codelineno-16-14" name="__codelineno-16-14" href="#__codelineno-16-14"></a><span class="c1"># v2rayA direct-egress routing; table 200 is dedicated to this service.</span>
+</span><span id="__span-16-15"><a id="__codelineno-16-15" name="__codelineno-16-15" href="#__codelineno-16-15"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">-/usr/bin/ip rule del priority 100 from 172.30.0.0/24 lookup 200</span>
+</span><span id="__span-16-16"><a id="__codelineno-16-16" name="__codelineno-16-16" href="#__codelineno-16-16"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">-/usr/bin/ip route flush table 200</span>
+</span><span id="__span-16-17"><a id="__codelineno-16-17" name="__codelineno-16-17" href="#__codelineno-16-17"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">/usr/bin/ip route add 172.30.0.0/24 dev br-v2raya table 200</span>
+</span><span id="__span-16-18"><a id="__codelineno-16-18" name="__codelineno-16-18" href="#__codelineno-16-18"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">/usr/bin/ip route add &lt;LAN_SUBNET_CIDR&gt; dev &lt;PRIMARY_IFACE&gt; table 200</span>
+</span><span id="__span-16-19"><a id="__codelineno-16-19" name="__codelineno-16-19" href="#__codelineno-16-19"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">/usr/bin/ip route add default via &lt;LAN_GATEWAY_IP&gt; dev &lt;PRIMARY_IFACE&gt; table 200</span>
+</span><span id="__span-16-20"><a id="__codelineno-16-20" name="__codelineno-16-20" href="#__codelineno-16-20"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">/usr/bin/ip rule add priority 100 from 172.30.0.0/24 lookup 200</span>
+</span><span id="__span-16-21"><a id="__codelineno-16-21" name="__codelineno-16-21" href="#__codelineno-16-21"></a>
+</span><span id="__span-16-22"><a id="__codelineno-16-22" name="__codelineno-16-22" href="#__codelineno-16-22"></a><span class="c1"># TUN setup; install the proxy&#39;s bypass before redirecting host traffic.</span>
+</span><span id="__span-16-23"><a id="__codelineno-16-23" name="__codelineno-16-23" href="#__codelineno-16-23"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">-/usr/bin/ip tuntap add mode tun dev tun0</span>
+</span><span id="__span-16-24"><a id="__codelineno-16-24" name="__codelineno-16-24" href="#__codelineno-16-24"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">/usr/bin/ip addr add 198.18.0.1/24 dev tun0</span>
+</span><span id="__span-16-25"><a id="__codelineno-16-25" name="__codelineno-16-25" href="#__codelineno-16-25"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">/usr/bin/ip -6 addr add fdfe::1/128 dev tun0</span>
+</span><span id="__span-16-26"><a id="__codelineno-16-26" name="__codelineno-16-26" href="#__codelineno-16-26"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">/usr/bin/ip link set dev tun0 up</span>
+</span><span id="__span-16-27"><a id="__codelineno-16-27" name="__codelineno-16-27" href="#__codelineno-16-27"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">/usr/bin/ip route add default via 198.18.0.1 dev tun0 metric 1</span>
+</span><span id="__span-16-28"><a id="__codelineno-16-28" name="__codelineno-16-28" href="#__codelineno-16-28"></a><span class="na">ExecStartPre</span><span class="o">=</span><span class="s">/usr/bin/ip -6 route add default dev tun0 metric 1</span>
+</span><span id="__span-16-29"><a id="__codelineno-16-29" name="__codelineno-16-29" href="#__codelineno-16-29"></a>
+</span><span id="__span-16-30"><a id="__codelineno-16-30" name="__codelineno-16-30" href="#__codelineno-16-30"></a><span class="na">ExecStart</span><span class="o">=</span><span class="s">&lt;TUN2SOCKS_BIN&gt; --device tun0 --proxy http://127.0.0.1:10809 --interface &lt;PRIMARY_IFACE&gt;</span>
+</span><span id="__span-16-31"><a id="__codelineno-16-31" name="__codelineno-16-31" href="#__codelineno-16-31"></a><span class="na">Restart</span><span class="o">=</span><span class="s">on-failure</span>
+</span><span id="__span-16-32"><a id="__codelineno-16-32" name="__codelineno-16-32" href="#__codelineno-16-32"></a><span class="na">RestartSec</span><span class="o">=</span><span class="s">5</span>
+</span><span id="__span-16-33"><a id="__codelineno-16-33" name="__codelineno-16-33" href="#__codelineno-16-33"></a><span class="na">LimitNOFILE</span><span class="o">=</span><span class="s">1048576</span>
+</span><span id="__span-16-34"><a id="__codelineno-16-34" name="__codelineno-16-34" href="#__codelineno-16-34"></a>
+</span><span id="__span-16-35"><a id="__codelineno-16-35" name="__codelineno-16-35" href="#__codelineno-16-35"></a><span class="c1"># Remove host redirection before removing the proxy&#39;s bypass.</span>
+</span><span id="__span-16-36"><a id="__codelineno-16-36" name="__codelineno-16-36" href="#__codelineno-16-36"></a><span class="na">ExecStopPost</span><span class="o">=</span><span class="s">-/usr/bin/ip route del default via 198.18.0.1 dev tun0 metric 1</span>
+</span><span id="__span-16-37"><a id="__codelineno-16-37" name="__codelineno-16-37" href="#__codelineno-16-37"></a><span class="na">ExecStopPost</span><span class="o">=</span><span class="s">-/usr/bin/ip -6 route del default dev tun0 metric 1</span>
+</span><span id="__span-16-38"><a id="__codelineno-16-38" name="__codelineno-16-38" href="#__codelineno-16-38"></a><span class="na">ExecStopPost</span><span class="o">=</span><span class="s">-/usr/bin/ip rule del priority 100 from 172.30.0.0/24 lookup 200</span>
+</span><span id="__span-16-39"><a id="__codelineno-16-39" name="__codelineno-16-39" href="#__codelineno-16-39"></a><span class="na">ExecStopPost</span><span class="o">=</span><span class="s">-/usr/bin/ip route flush table 200</span>
+</span><span id="__span-16-40"><a id="__codelineno-16-40" name="__codelineno-16-40" href="#__codelineno-16-40"></a><span class="na">ExecStopPost</span><span class="o">=</span><span class="s">-/usr/bin/ip link set dev tun0 down</span>
+</span><span id="__span-16-41"><a id="__codelineno-16-41" name="__codelineno-16-41" href="#__codelineno-16-41"></a><span class="na">ExecStopPost</span><span class="o">=</span><span class="s">-/usr/bin/ip tuntap del mode tun dev tun0</span>
+</span><span id="__span-16-42"><a id="__codelineno-16-42" name="__codelineno-16-42" href="#__codelineno-16-42"></a>
+</span><span id="__span-16-43"><a id="__codelineno-16-43" name="__codelineno-16-43" href="#__codelineno-16-43"></a><span class="k">[Install]</span>
+</span><span id="__span-16-44"><a id="__codelineno-16-44" name="__codelineno-16-44" href="#__codelineno-16-44"></a><span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
+</span></code></pre></div>
+<p><code>Requires=docker.service</code> starts Docker with this service, and <code>After=</code> orders startup after it. This does not create the Compose network or guarantee the proxy is ready: run Compose first and verify the listener. If the bridge is not ready at boot, the pre-start check fails and <code>Restart=on-failure</code> retries. After recreating the Docker network or restarting Docker, start/restart tun2socks to restore its custom routes.</p>
+<p>The rule runs at priority <code>100</code>, after the standard <code>local</code> lookup at <code>0</code> but before <code>main</code> at <code>32766</code>. Thus matching container traffic can use the physical default even though the main table prefers <code>tun0</code>. See the <a href="https://www.man7.org/linux/man-pages/man8/ip-rule.8.html">ip-rule manual</a>.</p>
+<p><strong>Do not omit the Docker-subnet route:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>172.30.0.0/24 dev br-v2raya table 200
+</span></code></pre></div>
+<p>In the debugging session, a unit containing only the LAN route and physical default still failed. Restoring this bridge route made both the direct HTTP-proxy test and the full tun2socks test succeed.</p>
+<p>Table <code>200</code> needs its own connected routes. For lookups that reach this table, its default already matches; Linux does not then consult <code>main</code> for a more specific Docker route. The bridge entry keeps destinations in <code>172.30.0.0/24</code> on <code>br-v2raya</code>. Destinations owned by the host itself are still handled by the earlier <code>local</code> rule.</p>
+<p>Reload the unit, enable boot startup, and restart it to rebuild the routes. Restarting briefly interrupts proxied traffic:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>daemon-reload
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>tun2socks
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>tun2socks
+</span></code></pre></div>
+<h3 id="verify-both-routing-paths">Verify both routing paths</h3>
+<p>These are read-only checks:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>ip<span class="w"> </span>rule<span class="w"> </span>show
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>ip<span class="w"> </span>route<span class="w"> </span>show<span class="w"> </span>table<span class="w"> </span><span class="m">200</span>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>ip<span class="w"> </span>route<span class="w"> </span>get<span class="w"> </span><span class="m">1</span>.1.1.1
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>ip<span class="w"> </span>route<span class="w"> </span>get<span class="w"> </span><span class="m">1</span>.1.1.1<span class="w"> </span>from<span class="w"> </span><span class="m">172</span>.30.0.2<span class="w"> </span>iif<span class="w"> </span>br-v2raya
+</span></code></pre></div>
+<p>With the tested physical network and container IP, the relevant output is:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a># Rules
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>0:      from all lookup local
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>100:    from 172.30.0.0/24 lookup 200
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>32766:  from all lookup main
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>32767:  from all lookup default
+</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>
+</span><span id="__span-20-7"><a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a># Table 200
+</span><span id="__span-20-8"><a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a>default via 192.168.101.1 dev wlp6s0
+</span><span id="__span-20-9"><a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a>172.30.0.0/24 dev br-v2raya scope link
+</span><span id="__span-20-10"><a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a>192.168.101.0/24 dev wlp6s0 scope link
+</span><span id="__span-20-11"><a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a>
+</span><span id="__span-20-12"><a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a># Ordinary host lookup
+</span><span id="__span-20-13"><a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a>1.1.1.1 via 198.18.0.1 dev tun0
+</span><span id="__span-20-14"><a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a>
+</span><span id="__span-20-15"><a id="__codelineno-20-15" name="__codelineno-20-15" href="#__codelineno-20-15"></a># Forwarded container lookup
+</span><span id="__span-20-16"><a id="__codelineno-20-16" name="__codelineno-20-16" href="#__codelineno-20-16"></a>1.1.1.1 from 172.30.0.2 via 192.168.101.1 dev wlp6s0 table 200
+</span></code></pre></div>
+<p>Use <code>iif br-v2raya</code> to simulate a packet arriving from Docker. Without <code>iif</code>, <code>ip route get</code> models locally generated traffic; a container source address not assigned to the host can produce a misleading <code>Network is unreachable</code>. This distinction is documented in <a href="https://www.man7.org/linux/man-pages/man8/ip-route.8.html">ip-route</a>.</p>
+<p>Then test an IP-literal URL to avoid DNS as a variable. Both commands force IPv4 (<code>-4</code>), show connection details (<code>-v</code>), and stop after ten seconds (<code>--max-time 10</code>). <code>--proxy ''</code> disables proxy environment variables for the full TUN test; the second command explicitly selects v2rayA with <code>--proxy</code>, while <code>--noproxy ''</code> prevents environment exclusions from bypassing it.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># Full path: application → tun0 → tun2socks → v2rayA.</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>curl<span class="w"> </span>-4<span class="w"> </span>-v<span class="w"> </span>--max-time<span class="w"> </span><span class="m">10</span><span class="w"> </span>--proxy<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span>https://1.1.1.1/cdn-cgi/trace
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="c1"># Connect directly to v2rayA&#39;s HTTP proxy, bypassing tun2socks.</span>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>curl<span class="w"> </span>-4<span class="w"> </span>-v<span class="w"> </span>--max-time<span class="w"> </span><span class="m">10</span><span class="w"> </span>--noproxy<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="w">  </span>--proxy<span class="w"> </span>http://127.0.0.1:10809<span class="w"> </span>https://1.1.1.1/cdn-cgi/trace
+</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Result</th>
+<th>Next area to inspect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Direct proxy works; full TUN test fails</td>
+<td>tun2socks, its proxy endpoint, and the TUN routes</td>
+</tr>
+<tr>
+<td>Both fail</td>
+<td>v2rayA/upstream health, all three table-200 routes, Docker forwarding, and <code>rp_filter</code></td>
+</tr>
+<tr>
+<td>Both work</td>
+<td>The tested TCP paths work; repeat after restart and reboot</td>
+</tr>
+</tbody>
+</table>
+<p>The corrected path is:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>Host application → tun0 → tun2socks → 127.0.0.1:10809
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>                                           │ Docker port forwarding
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>                                           ▼
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>                                    v2rayA (172.30.0.x)
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>                                           │ source rule, priority 100
+</span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a>                                           ▼
+</span><span id="__span-22-7"><a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a>                                       table 200
+</span><span id="__span-22-8"><a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a>                                           │ physical gateway
+</span><span id="__span-22-9"><a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a>                                           ▼
+</span><span id="__span-22-10"><a id="__codelineno-22-10" name="__codelineno-22-10" href="#__codelineno-22-10"></a>                                    primary NIC → Internet
+</span></code></pre></div>
+<h3 id="ipv6-and-udp-scope">IPv6 and UDP scope</h3>
+<p>This Compose network has no IPv6 subnet configured, so the container's upstream egress uses IPv4 and the bypass is an IPv4 rule. Host IPv6 TCP traffic can still enter <code>tun0</code> and reach an IPv6 destination through HTTP CONNECT over the IPv4 proxy connection, provided the proxy supports that destination. If you enable IPv6 egress for the container, add the corresponding IPv6 policy rule and connected/default routes before redirecting it through TUN.</p>
+<p>HTTP proxy mode in tun2socks has <a href="https://github.com/xjasonlyu/tun2socks/wiki/Proxy-Models#udp-support-table">no UDP support</a>. SOCKS5 supports UDP, but switching to <code>socks5://127.0.0.1:10808</code> requires verifying the proxy's UDP relay and Docker UDP reachability; the Compose mappings above publish TCP only. The routing-loop fix does not by itself provide UDP transport or DNS leak protection.</p>
+<hr />
+<h2 id="8-verify-after-start-and-after-reboot">8. Verify After Start and After Reboot</h2>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>ip<span class="w"> </span>addr<span class="w"> </span>show<span class="w"> </span>dev<span class="w"> </span>tun0
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>ip<span class="w"> </span>route<span class="w"> </span>show
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>ip<span class="w"> </span>-6<span class="w"> </span>route<span class="w"> </span>show
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>systemctl<span class="w"> </span>is-active<span class="w"> </span>tun2socks
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>journalctl<span class="w"> </span>-u<span class="w"> </span>tun2socks<span class="w"> </span>-n<span class="w"> </span><span class="m">50</span><span class="w"> </span>--no-pager
 </span></code></pre></div>
 <p>Expected:</p>
 <ul>
@@ -1591,8 +1883,9 @@
 <li>IPv6 default route goes to <code>tun0</code></li>
 <li>service is <code>active</code></li>
 </ul>
+<p>For local v2rayA, also repeat the rule/table checks and both curl tests in section 7. An active service alone does not prove that its upstream proxy works.</p>
 <hr />
-<h2 id="8-faq-from-the-rehearsal">8. FAQ From the Rehearsal</h2>
+<h2 id="9-faq-from-the-rehearsal">9. FAQ From the Rehearsal</h2>
 <h3 id="q1-is-15-required-for-1981801">Q1: Is <code>/15</code> required for <code>198.18.0.1</code>?</h3>
 <p>No. <code>/15</code> is a convention from the wiki examples. <code>/24</code> works too.</p>
 <h3 id="q2-is-198180015-hardcoded-in-tun2socks">Q2: Is <code>198.18.0.0/15</code> hardcoded in tun2socks?</h3>
@@ -1608,23 +1901,28 @@
 <h3 id="q7-what-is-network-onlinetarget">Q7: What is <code>network-online.target</code>?</h3>
 <p>A systemd synchronization target that means network configuration is considered online enough for dependent services.</p>
 <p>Check with:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>systemctl<span class="w"> </span>is-active<span class="w"> </span>network-online.target
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>systemctl<span class="w"> </span>status<span class="w"> </span>network-online.target
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>systemctl<span class="w"> </span>is-active<span class="w"> </span>network-online.target
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>systemctl<span class="w"> </span>status<span class="w"> </span>network-online.target
 </span></code></pre></div>
 <h3 id="q8-does-this-proxy-ipv6-too">Q8: Does this proxy IPv6 too?</h3>
-<p>Only if you add IPv6 TUN address and IPv6 default route. The unit file above does that.</p>
+<p>Both unit alternatives add an IPv6 TUN address and default route. Successful IPv6 TCP connections also require proxy support for the destination; HTTP mode does not carry UDP.</p>
 <h3 id="q9-why-use-fdfe1128-instead-of-64">Q9: Why use <code>fdfe::1/128</code> instead of <code>/64</code>?</h3>
 <p>For a point-to-point virtual TUN endpoint, <code>/128</code> is a valid and tight scope.</p>
 <hr />
-<h2 id="9-what-this-post-does-not-cover-yet">9. What This Post Does Not Cover Yet</h2>
+<h2 id="10-what-this-post-does-not-cover-yet">10. What This Post Does Not Cover Yet</h2>
 <p>This post focuses on interface, routing, and service lifecycle.</p>
 <p>DNS leak handling is a separate topic and should be configured explicitly depending on your DNS/proxy model.</p>
 <hr />
 <h2 id="references">References</h2>
 <ul>
-<li>https://github.com/xjasonlyu/tun2socks/wiki/Examples</li>
-<li>https://github.com/xjasonlyu/tun2socks/wiki/DNS-Configuration</li>
-<li>https://github.com/xjasonlyu/tun2socks/wiki/Interface-and-Routes</li>
+<li><a href="https://github.com/xjasonlyu/tun2socks/wiki/Examples">tun2socks examples and local-proxy loop warning</a></li>
+<li><a href="https://github.com/xjasonlyu/tun2socks/wiki/DNS-Configuration">tun2socks DNS configuration</a></li>
+<li><a href="https://github.com/xjasonlyu/tun2socks/wiki/Interface-and-Routes">tun2socks interfaces and routes</a></li>
+<li><a href="https://github.com/xjasonlyu/tun2socks/wiki/Proxy-Models">tun2socks proxy models and UDP support</a></li>
+<li><a href="https://www.man7.org/linux/man-pages/man8/ip-rule.8.html">Linux policy routing: ip-rule</a></li>
+<li><a href="https://www.man7.org/linux/man-pages/man8/ip-route.8.html">Linux route lookup: ip-route</a></li>
+<li><a href="https://docs.docker.com/engine/network/drivers/bridge/">Docker bridge networking</a></li>
+<li><a href="https://docs.docker.com/reference/compose-file/networks/">Docker Compose network configuration</a></li>
 </ul>
 
 
