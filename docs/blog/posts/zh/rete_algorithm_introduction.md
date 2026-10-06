@@ -83,11 +83,11 @@ for a in goldAccounts:
 
 ```text
 Account --> [Status == Gold] --> M_G --> [tuple adapter] --> B_G --+
-                                                               | left
-                                                               v
-                                                             [Join] --> B_B --> T_bonus
-                                                               ^
-                                                               | right
+                                            	                   | left
+                                                	               v
+                                                    	         [Join] --> B_B --> T_bonus
+                                                        	       ^
+                                                            	   | right
 Flight --> [Miles >= 500] --> M_E --> [Airline != Partner] --> M_N-+
                               |
                               +--> T_base
