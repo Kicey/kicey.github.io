@@ -1,7 +1,7 @@
 ---
 date: 2026-04-22
 updated: 2026-10-06
-slug: rete-algorithm-introduction-through-a-minimal-go-demo
+slug: rete-incremental-rule-matching-from-first-principles-to-go
 summary: Derive Rete from a naïve rule matcher, then build a runnable Go example with shared filters, real joins, fact retraction, and a separate agenda.
 ---
 
