@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="A practical introduction to the Rete algorithm using a minimal Go demo, focusing on fact propagation through rules and why node memories make matching…">
+        <meta name="description" content="Derive Rete from a naïve rule matcher, then build a runnable Go example with shared filters, real joins, fact retraction, and a separate agenda.">
       
       
         <meta name="author" content="kicey">
@@ -30,7 +30,7 @@
     
     
       
-        <title>Rete Algorithm Introduction Through a Minimal Go Demo - kicey's blog</title>
+        <title>Rete: Incremental Rule Matching, from First Principles to Go - kicey's blog</title>
       
     
     
@@ -77,15 +77,15 @@
   
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="kicey's blog" />
-  <meta property="og:title" content="Rete Algorithm Introduction Through a Minimal Go Demo" />
-  <meta property="og:description" content="A practical introduction to the Rete algorithm using a minimal Go demo, focusing on fact propagation through rules and why node memories make matching…" />
+  <meta property="og:title" content="Rete: Incremental Rule Matching, from First Principles to Go" />
+  <meta property="og:description" content="Derive Rete from a naïve rule matcher, then build a runnable Go example with shared filters, real joins, fact retraction, and a separate agenda." />
   <meta property="og:url" content="https://github.kicey.site/blog/2026/04/22/rete-algorithm-introduction-through-a-minimal-go-demo/" />
   <meta property="og:image" content="https://github.kicey.site/images/og.png" />
   <meta property="og:image:alt" content="kicey's blog — Practical notes about computer science, Linux, programming languages, virtualization, and systems engineering." />
   <meta property="og:locale" content="en_US" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Rete Algorithm Introduction Through a Minimal Go Demo" />
-  <meta name="twitter:description" content="A practical introduction to the Rete algorithm using a minimal Go demo, focusing on fact propagation through rules and why node memories make matching…" />
+  <meta name="twitter:title" content="Rete: Incremental Rule Matching, from First Principles to Go" />
+  <meta name="twitter:description" content="Derive Rete from a naïve rule matcher, then build a runnable Go example with shared filters, real joins, fact retraction, and a separate agenda." />
   <meta name="twitter:image" content="https://github.kicey.site/images/og.png" />
   
     
@@ -98,21 +98,21 @@
   
   <meta property="article:published_time" content="2026-04-22" />
     
-  <meta property="article:modified_time" content="2026-04-22" />
+  <meta property="article:modified_time" content="2026-10-06" />
     
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    "headline": "Rete Algorithm Introduction Through a Minimal Go Demo",
-    "description": "A practical introduction to the Rete algorithm using a minimal Go demo, focusing on fact propagation through rules and why node memories make matching\u2026",
+    "headline": "Rete: Incremental Rule Matching, from First Principles to Go",
+    "description": "Derive Rete from a na\u00efve rule matcher, then build a runnable Go example with shared filters, real joins, fact retraction, and a separate agenda.",
     "url": "https://github.kicey.site/blog/2026/04/22/rete-algorithm-introduction-through-a-minimal-go-demo/",
     "mainEntityOfPage": {
       "@type": "WebPage",
       "@id": "https://github.kicey.site/blog/2026/04/22/rete-algorithm-introduction-through-a-minimal-go-demo/"
     },
     "datePublished": "2026-04-22",
-    "dateModified": "2026-04-22",
+    "dateModified": "2026-10-06",
     "inLanguage": "en",
     "author": {
       "@type": "Person",
@@ -139,7 +139,7 @@
       {
         "@type": "ListItem",
         "position": 2,
-        "name": "Rete Algorithm Introduction Through a Minimal Go Demo",
+        "name": "Rete: Incremental Rule Matching, from First Principles to Go",
         "item": "https://github.kicey.site/blog/2026/04/22/rete-algorithm-introduction-through-a-minimal-go-demo/"
       }
       
@@ -167,7 +167,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#rete-algorithm-introduction-through-a-minimal-go-demo" class="md-skip">
+        <a href="#rete-incremental-rule-matching-from-first-principles-to-go" class="md-skip">
           Skip to content
         </a>
       
@@ -200,7 +200,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Rete Algorithm Introduction Through a Minimal Go Demo
+              Rete: Incremental Rule Matching, from First Principles to Go
             
           </span>
         </div>
@@ -1168,10 +1168,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-the-rule-set-used-in-the-demo" class="md-nav__link">
+  <a href="#1-start-with-the-matching-problem" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. The Rule Set Used in the Demo
+        1. Start with the matching problem
       
     </span>
   </a>
@@ -1179,10 +1179,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-network-shape-what-gets-built-once" class="md-nav__link">
+  <a href="#2-give-the-rules-precise-semantics" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Network Shape (What Gets Built Once)
+        2. Give the rules precise semantics
       
     </span>
   </a>
@@ -1190,22 +1190,44 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-how-facts-are-processed-on-the-rule-set" class="md-nav__link">
+  <a href="#3-derive-a-network-that-retains-the-intermediate-results" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. How Facts Are Processed on the Rule Set
+        3. Derive a network that retains the intermediate results
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="3. How Facts Are Processed on the Rule Set">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-trace-insertion-from-both-sides" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Trace insertion from both sides
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-implement-the-matcher-in-go" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Implement the matcher in Go
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Implement the matcher in Go">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#step-a-assert-accountidjoe123-rewardmiles150000-statusunknown" class="md-nav__link">
+  <a href="#51-fact-identity-and-tuples" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step A: Assert Account{ID:Joe123, RewardMiles:150000, Status:Unknown}
+        5.1 Fact identity and tuples
       
     </span>
   </a>
@@ -1213,10 +1235,43 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-b-assert-flightmiles2419-categoryeconomy-airlineoriginal" class="md-nav__link">
+  <a href="#52-memories-and-propagation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step B: Assert Flight{Miles:2419, Category:Economy, Airline:Original}
+        5.2 Memories and propagation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-join-a-new-result-with-the-retained-opposite-side" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Join a new result with the retained opposite side
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-wire-the-graph-and-terminals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 Wire the graph and terminals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#55-working-memory-operations-and-the-executable-trace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5 Working-memory operations and the executable trace
       
     </span>
   </a>
@@ -1229,71 +1284,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-why-memory-makes-rete-efficient" class="md-nav__link">
+  <a href="#6-retraction-modification-and-action-lifetime" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Why Memory Makes Rete Efficient
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="4. Why Memory Makes Rete Efficient">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#41-structural-sharing-one-test-many-rules" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4.1 Structural sharing: one test, many rules
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#42-temporal-reuse-only-process-changes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4.2 Temporal reuse: only process changes
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#43-incremental-joins-with-cached-sides" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4.3 Incremental joins with cached sides
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#44-tradeoff-memory-for-speed" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4.4 Tradeoff: memory for speed
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5-a-compact-mental-model" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. A Compact Mental Model
+        6. Retraction, modification, and action lifetime
       
     </span>
   </a>
@@ -1301,10 +1295,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-what-this-demo-simplifies-still-useful" class="md-nav__link">
+  <a href="#7-derive-the-performance-benefit-and-its-limits" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. What This Demo Simplifies (Still Useful)
+        7. Derive the performance benefit and its limits
       
     </span>
   </a>
@@ -1312,10 +1306,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#references" class="md-nav__link">
+  <a href="#8-scope-and-further-reading" class="md-nav__link">
     <span class="md-ellipsis">
       
-        References
+        8. Scope and further reading
       
     </span>
   </a>
@@ -1383,144 +1377,497 @@
 
 
 
-<h1 id="rete-algorithm-introduction-through-a-minimal-go-demo">Rete Algorithm Introduction Through a Minimal Go Demo</h1>
+<h1 id="rete-incremental-rule-matching-from-first-principles-to-go">Rete: Incremental Rule Matching, from First Principles to Go</h1>
+<p>A rule engine repeatedly asks which combinations of current facts satisfy its rules. Rete keeps those matches up to date by remembering filtered facts and partial matches, then propagating changes through a shared network. We will derive that network and implement a small matcher in Go.</p>
 <!-- more -->
 
-<p>This post explains the Rete algorithm through a small Go implementation in <a href="https://github.com/Kicey/rete-algorithm-demo">Kicey/rete-algorithm-demo</a>. The goal is to make Rete less abstract by following one concrete runtime trace.</p>
-<p>I focus on two questions:</p>
-<ol>
-<li>How does Rete process facts on a rule set?</li>
-<li>Why is it efficient with node memory?</li>
-</ol>
-<p>The demo is intentionally small, but it still shows the core ideas from classic Rete writeups:</p>
+<h2 id="1-start-with-the-matching-problem">1. Start with the matching problem</h2>
+<p>Suppose an application holds account and flight records. A rule has a <strong>left-hand side (LHS)</strong> describing its conditions and a <strong>right-hand side (RHS)</strong> describing an action. The matcher must find every binding of facts that satisfies the LHS; one rule can have many simultaneous matches.</p>
+<p>These terms name different parts of the system:</p>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning in this post</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fact</td>
+<td>A record asserted into the engine, with an engine-assigned identity</td>
+</tr>
+<tr>
+<td>Working memory</td>
+<td>All currently asserted facts, including those that match no rule</td>
+</tr>
+<tr>
+<td>Pattern</td>
+<td>Constraints on a fact, possibly referring to variables bound by earlier patterns</td>
+</tr>
+<tr>
+<td>Partial match / tuple</td>
+<td>An ordered sequence of facts satisfying a prefix of a rule's conditions</td>
+</tr>
+<tr>
+<td>Activation</td>
+<td>A rule plus a complete matching tuple, eligible for action execution</td>
+</tr>
+<tr>
+<td>Agenda</td>
+<td>Pending activations waiting to be selected and executed</td>
+</tr>
+</tbody>
+</table>
+<p>Rete performs matching within the larger match–resolve–act cycle. The agenda chooses an activation, and its action may change working memory, causing another matching cycle. Finding a match and executing an action are separate operations. The <a href="https://docs.drools.org/6.5.0.Final/drools-docs/html/ch07.html">Drools execution documentation</a> illustrates this separation.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>working-memory changes -&gt; matcher -&gt; agenda -&gt; select and execute an action
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>          ^                                               |
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>          +------------- possible fact changes -----------+
+</span></code></pre></div>
+<p>A straightforward matcher can recompute every rule's matches after every insertion, deletion, or modification. That is correct, but repeats work on facts that have not changed. Rete retains intermediate results so it can maintain the matches incrementally.</p>
+<h2 id="2-give-the-rules-precise-semantics">2. Give the rules precise semantics</h2>
+<p>We will use <code>Account{ID, Status}</code> and <code>Flight{ID, AccountID, Miles, Airline}</code>. <code>Flight.AccountID</code> identifies the account that took the flight. The two rules are:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>BaseMiles:
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    Flight f where f.Miles &gt;= 500
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    -&gt; propose f.Miles base reward miles
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>GoldBonus:
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    Account a where a.Status == &quot;Gold&quot;
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    AND Flight f where f.Miles &gt;= 500
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>                       AND f.Airline != &quot;Partner&quot;
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>                       AND f.AccountID == a.ID
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    -&gt; propose f.Miles additional reward miles for a
+</span></code></pre></div>
+<p>This is descriptive notation, not a rule language that our program parses. <code>BaseMiles</code> requires only a flight. <code>GoldBonus</code> requires a matching account as well. A qualifying flight for a Silver account can therefore receive a base proposal without a bonus proposal.</p>
+<p>Gold status comes from the asserted account fact. If the application also models upgrades based on accumulated miles, an upgrade rule must update that fact and notify the matcher. Account ownership is checked separately by the join condition.</p>
+<p>Both actions in our program print proposals. They do not update a reward balance, so the example can focus on matching and activation lifetime.</p>
+<p>For comparison, a naïve implementation of the bonus rule might do this after each change:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>goldAccounts = filter(allAccounts, Status == &quot;Gold&quot;)
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>eligibleFlights = filter(allFlights, Miles &gt;= 500 AND Airline != &quot;Partner&quot;)
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>matches = []
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>for a in goldAccounts:
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    for f in eligibleFlights:
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>        if a.ID == f.AccountID:
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>            matches.append((a, f))
+</span></code></pre></div>
+<p>When one flight arrives, why repeat the filters for every existing account and flight, or retest all existing account–flight pairs?</p>
+<h2 id="3-derive-a-network-that-retains-the-intermediate-results">3. Derive a network that retains the intermediate results</h2>
+<p>First separate conditions by what they need to inspect. <code>Status == "Gold"</code>, <code>Miles &gt;= 500</code>, and <code>Airline != "Partner"</code> each inspect one fact: they are <strong>alpha tests</strong>. <code>a.ID == f.AccountID</code> needs bindings from two facts: it belongs in a <strong>beta join</strong>.</p>
+<p>An <strong>alpha memory</strong> stores facts that pass a path of alpha tests. A <strong>beta memory</strong> stores tuples that match a prefix of the rule. A join extends each matching left tuple with a right fact. This vocabulary follows the <a href="https://docs.drools.org/6.5.0.Final/drools-docs/html/ch05.html">Rete section of the Drools documentation</a>.</p>
+<p>For our rules, the network is:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Account --&gt; [Status == Gold] --&gt; M_G --&gt; [tuple adapter] --&gt; B_G --+
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>                                                               | left
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>                                                               v
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>                                                             [Join] --&gt; B_B --&gt; T_bonus
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>                                                               ^
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>                                                               | right
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>Flight --&gt; [Miles &gt;= 500] --&gt; M_E --&gt; [Airline != Partner] --&gt; M_N-+
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>                              |
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>                              +--&gt; T_base
+</span></code></pre></div>
+<p>The join tests <code>Account.ID == Flight.AccountID</code>. Type routing occurs before the first alpha test, so accounts never enter the flight filters.</p>
+<table>
+<thead>
+<tr>
+<th>Memory</th>
+<th>Contents</th>
+<th>Go representation below</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>M_G</code></td>
+<td>Gold account facts</td>
+<td><code>gold.Memory</code></td>
+</tr>
+<tr>
+<td><code>M_E</code></td>
+<td>Flights with at least 500 miles</td>
+<td><code>eligible.Memory</code></td>
+</tr>
+<tr>
+<td><code>M_N</code></td>
+<td>Flights in <code>M_E</code> whose airline is not Partner</td>
+<td><code>other.Memory</code></td>
+</tr>
+<tr>
+<td><code>B_G</code></td>
+<td>Singleton tuples <code>(Account)</code></td>
+<td><code>left.Memory</code></td>
+</tr>
+<tr>
+<td><code>B_B</code></td>
+<td>Joined tuples <code>(Account, Flight)</code></td>
+<td><code>bonus.Memory</code></td>
+</tr>
+</tbody>
+</table>
+<p>The tuple adapter turns one account fact into a one-element tuple. In this example, a pair in <code>B_B</code> is already a complete match. For a rule with a third pattern, that pair could instead become the left input of another join, producing a three-fact tuple.</p>
+<p><code>M_E</code> has two consumers: the base terminal and the non-partner filter. Both rules reuse the same <code>Miles &gt;= 500</code> test and its memory. This is <strong>structural sharing</strong>. Reusing those stored results across successive fact changes is <strong>temporal reuse</strong>.</p>
+<p>The terminals create or cancel activations. They do not execute actions during propagation. In a general engine, a compiler builds this graph from rule definitions; our constructor wires it explicitly.</p>
+<h2 id="4-trace-insertion-from-both-sides">4. Trace insertion from both sides</h2>
+<p>Assert <code>A1</code> with Gold status and <code>A2</code> with Silver status. Both remain in working memory, but only <code>A1</code> enters <code>M_G</code> and the singleton beta memory <code>B_G</code>. There is no bonus match yet because no flight has arrived.</p>
+<p>Now insert these flights in order. Each row shows the memories <strong>after</strong> the insertion; names stand for the corresponding fact identities.</p>
+<table>
+<thead>
+<tr>
+<th>Inserted flight</th>
+<th><code>M_E</code></th>
+<th><code>M_N</code></th>
+<th><code>B_B</code></th>
+<th>New activations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>F1: A1, 2419 miles, Original</code></td>
+<td><code>F1</code></td>
+<td><code>F1</code></td>
+<td><code>(A1, F1)</code></td>
+<td>Base <code>F1</code>; bonus <code>(A1, F1)</code></td>
+</tr>
+<tr>
+<td><code>F2: A2, 800 miles, Original</code></td>
+<td><code>F1, F2</code></td>
+<td><code>F1, F2</code></td>
+<td><code>(A1, F1)</code></td>
+<td>Base <code>F2</code></td>
+</tr>
+<tr>
+<td><code>F3: A1, 300 miles, Original</code></td>
+<td><code>F1, F2</code></td>
+<td><code>F1, F2</code></td>
+<td><code>(A1, F1)</code></td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>F4: A1, 900 miles, Partner</code></td>
+<td><code>F1, F2, F4</code></td>
+<td><code>F1, F2</code></td>
+<td><code>(A1, F1)</code></td>
+<td>Base <code>F4</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>F1</code> passes both flight filters. Its <strong>right activation</strong> compares it with retained left tuples and produces <code>(A1, F1)</code>. <code>F2</code> passes the filters but fails the join with <code>A1</code>; <code>A2</code> is not in the Gold memory. <code>F3</code> stops at the miles test. <code>F4</code> passes the shared miles test and reaches the base terminal, but stops at the airline test.</p>
+<p>Reverse the first two relevant arrivals: insert <code>F1</code> before <code>A1</code>. The right memory retains <code>F1</code>, but the join initially has no left tuple. When <code>A1</code> later arrives, its <strong>left activation</strong> compares <code>(A1)</code> with retained right facts and finds <code>F1</code>. A correct join must handle both directions.</p>
+<p>For these pure positive conditions, the final match set depends on the current facts, not their insertion order. That does not guarantee identical action histories when actions modify facts or are fired between insertions.</p>
+<h2 id="5-implement-the-matcher-in-go">5. Implement the matcher in Go</h2>
+<p>The implementation is available in <a href="https://github.com/Kicey/rete-algorithm-demo">Kicey/rete-algorithm-demo</a>. It uses only the standard library, and its Go module requires Go 1.25.4 or later. Read these files alongside the explanation:</p>
 <ul>
-<li>A discrimination network (type and single-fact condition filtering)</li>
-<li>Join nodes for cross-fact matching</li>
-<li>Memory on alpha and beta sides to avoid repeated full scans</li>
+<li><a href="https://github.com/Kicey/rete-algorithm-demo/blob/main/main.go">main.go</a> defines the facts, constructs the rule network, and supplies the actions and input sequence.</li>
+<li><a href="https://github.com/Kicey/rete-algorithm-demo/blob/main/rete.go">rete.go</a> implements identities, memories, joins, propagation, and agenda execution.</li>
+<li><a href="https://github.com/Kicey/rete-algorithm-demo/blob/main/rete_test.go">rete_test.go</a> compares incremental results with full recomputation.</li>
 </ul>
-<hr />
-<h2 id="1-the-rule-set-used-in-the-demo">1. The Rule Set Used in the Demo</h2>
-<p>The sample domain is airline rewards with two fact types:</p>
+<p>The five code blocks below present the implementation in reading order.</p>
+<h3 id="51-fact-identity-and-tuples">5.1 Fact identity and tuples</h3>
+<p>An insertion returns a unique integer handle. Business IDs are used for joins; handles identify particular asserted facts. Inserting equal values twice creates two facts in this implementation. Applications requiring one account per business ID must enforce that separately.</p>
+<div class="language-go highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">package</span><span class="w"> </span><span class="nx">main</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="kn">import</span><span class="w"> </span><span class="p">(</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="s">&quot;fmt&quot;</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="s">&quot;sort&quot;</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span><span class="s">&quot;strconv&quot;</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="p">)</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="kd">type</span><span class="w"> </span><span class="nx">Account</span><span class="w"> </span><span class="kd">struct</span><span class="p">{</span><span class="w"> </span><span class="nx">ID</span><span class="p">,</span><span class="w"> </span><span class="nx">Status</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">}</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="kd">type</span><span class="w"> </span><span class="nx">Flight</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">    </span><span class="nx">ID</span><span class="p">,</span><span class="w"> </span><span class="nx">AccountID</span><span class="w"> </span><span class="kt">string</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">    </span><span class="nx">Miles</span><span class="w">         </span><span class="kt">int</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">    </span><span class="nx">Airline</span><span class="w">       </span><span class="kt">string</span>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="p">}</span>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="c1">// Fact is an immutable value snapshot identified by an insertion handle.</span>
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="kd">type</span><span class="w"> </span><span class="nx">Fact</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="w">    </span><span class="nx">Handle</span><span class="w"> </span><span class="kt">int</span>
+</span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="w">    </span><span class="nx">Value</span><span class="w">  </span><span class="kt">any</span>
+</span><span id="__span-4-20"><a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="p">}</span>
+</span><span id="__span-4-21"><a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>
+</span><span id="__span-4-22"><a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="c1">// Tuple retains ordered fact identities for a rule prefix.</span>
+</span><span id="__span-4-23"><a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a><span class="kd">type</span><span class="w"> </span><span class="nx">Tuple</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-24"><a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a><span class="w">    </span><span class="nx">Key</span><span class="w">   </span><span class="kt">string</span>
+</span><span id="__span-4-25"><a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a><span class="w">    </span><span class="nx">Facts</span><span class="w"> </span><span class="p">[]</span><span class="nx">Fact</span>
+</span><span id="__span-4-26"><a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a><span class="p">}</span>
+</span><span id="__span-4-27"><a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a>
+</span><span id="__span-4-28"><a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a><span class="kd">func</span><span class="w"> </span><span class="nx">singleton</span><span class="p">(</span><span class="nx">f</span><span class="w"> </span><span class="nx">Fact</span><span class="p">)</span><span class="w"> </span><span class="nx">Tuple</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-29"><a id="__codelineno-4-29" name="__codelineno-4-29" href="#__codelineno-4-29"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">Tuple</span><span class="p">{</span><span class="nx">strconv</span><span class="p">.</span><span class="nx">Itoa</span><span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">Handle</span><span class="p">),</span><span class="w"> </span><span class="p">[]</span><span class="nx">Fact</span><span class="p">{</span><span class="nx">f</span><span class="p">}}</span>
+</span><span id="__span-4-30"><a id="__codelineno-4-30" name="__codelineno-4-30" href="#__codelineno-4-30"></a><span class="p">}</span>
+</span><span id="__span-4-31"><a id="__codelineno-4-31" name="__codelineno-4-31" href="#__codelineno-4-31"></a>
+</span><span id="__span-4-32"><a id="__codelineno-4-32" name="__codelineno-4-32" href="#__codelineno-4-32"></a><span class="c1">// Copy the prefix so sibling results never share a writable backing array.</span>
+</span><span id="__span-4-33"><a id="__codelineno-4-33" name="__codelineno-4-33" href="#__codelineno-4-33"></a><span class="kd">func</span><span class="w"> </span><span class="nx">extend</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="nx">Tuple</span><span class="p">,</span><span class="w"> </span><span class="nx">f</span><span class="w"> </span><span class="nx">Fact</span><span class="p">)</span><span class="w"> </span><span class="nx">Tuple</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-34"><a id="__codelineno-4-34" name="__codelineno-4-34" href="#__codelineno-4-34"></a><span class="w">    </span><span class="nx">facts</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nb">append</span><span class="p">([]</span><span class="nx">Fact</span><span class="p">(</span><span class="kc">nil</span><span class="p">),</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">Facts</span><span class="o">...</span><span class="p">)</span>
+</span><span id="__span-4-35"><a id="__codelineno-4-35" name="__codelineno-4-35" href="#__codelineno-4-35"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">Tuple</span><span class="p">{</span><span class="nx">t</span><span class="p">.</span><span class="nx">Key</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;/&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">strconv</span><span class="p">.</span><span class="nx">Itoa</span><span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">Handle</span><span class="p">),</span><span class="w"> </span><span class="nb">append</span><span class="p">(</span><span class="nx">facts</span><span class="p">,</span><span class="w"> </span><span class="nx">f</span><span class="p">)}</span>
+</span><span id="__span-4-36"><a id="__codelineno-4-36" name="__codelineno-4-36" href="#__codelineno-4-36"></a><span class="p">}</span>
+</span></code></pre></div>
+<p><code>Tuple.Key</code> encodes the ordered handles, such as <code>1/3</code>. <code>extend</code> copies the slice before appending so sibling tuples cannot overwrite a shared backing array. Facts are passed as value structs containing only strings and integers; the engine retains immutable snapshots. This copy strategy would need reconsideration for pointers, slices, or maps inside facts.</p>
+<h3 id="52-memories-and-propagation">5.2 Memories and propagation</h3>
+<p><code>Push(x, true)</code> inserts a result; <code>Push(x, false)</code> removes it. Each memory updates its contents before notifying its consumers. Removal uses the retained value and does not repeat an alpha test against a potentially changed object.</p>
+<div class="language-go highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1">// Alpha combines a single-fact filter with its retained passing facts.</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kd">type</span><span class="w"> </span><span class="nx">Alpha</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="nx">Test</span><span class="w">   </span><span class="kd">func</span><span class="p">(</span><span class="kt">any</span><span class="p">)</span><span class="w"> </span><span class="kt">bool</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="nx">Memory</span><span class="w"> </span><span class="kd">map</span><span class="p">[</span><span class="kt">int</span><span class="p">]</span><span class="nx">Fact</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="nx">Out</span><span class="w">    </span><span class="p">[]</span><span class="kd">func</span><span class="p">(</span><span class="nx">Fact</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="p">)</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="p">}</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">a</span><span class="w"> </span><span class="o">*</span><span class="nx">Alpha</span><span class="p">)</span><span class="w"> </span><span class="nx">Push</span><span class="p">(</span><span class="nx">f</span><span class="w"> </span><span class="nx">Fact</span><span class="p">,</span><span class="w"> </span><span class="nx">add</span><span class="w"> </span><span class="kt">bool</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">add</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">!</span><span class="nx">a</span><span class="p">.</span><span class="nx">Test</span><span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">Value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">            </span><span class="k">return</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nx">_</span><span class="p">,</span><span class="w"> </span><span class="nx">exists</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">a</span><span class="p">.</span><span class="nx">Memory</span><span class="p">[</span><span class="nx">f</span><span class="p">.</span><span class="nx">Handle</span><span class="p">];</span><span class="w"> </span><span class="nx">exists</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">            </span><span class="k">return</span>
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="w">        </span><span class="nx">a</span><span class="p">.</span><span class="nx">Memory</span><span class="p">[</span><span class="nx">f</span><span class="p">.</span><span class="nx">Handle</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">f</span>
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="w">        </span><span class="nx">stored</span><span class="p">,</span><span class="w"> </span><span class="nx">exists</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">a</span><span class="p">.</span><span class="nx">Memory</span><span class="p">[</span><span class="nx">f</span><span class="p">.</span><span class="nx">Handle</span><span class="p">]</span>
+</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">!</span><span class="nx">exists</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-20"><a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="w">            </span><span class="k">return</span>
+</span><span id="__span-5-21"><a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-5-22"><a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="w">        </span><span class="nx">f</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">stored</span>
+</span><span id="__span-5-23"><a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a><span class="w">        </span><span class="nb">delete</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">Memory</span><span class="p">,</span><span class="w"> </span><span class="nx">f</span><span class="p">.</span><span class="nx">Handle</span><span class="p">)</span>
+</span><span id="__span-5-24"><a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-5-25"><a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="nx">_</span><span class="p">,</span><span class="w"> </span><span class="nx">out</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">a</span><span class="p">.</span><span class="nx">Out</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-26"><a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a><span class="w">        </span><span class="nx">out</span><span class="p">(</span><span class="nx">f</span><span class="p">,</span><span class="w"> </span><span class="nx">add</span><span class="p">)</span>
+</span><span id="__span-5-27"><a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-5-28"><a id="__codelineno-5-28" name="__codelineno-5-28" href="#__codelineno-5-28"></a><span class="p">}</span>
+</span><span id="__span-5-29"><a id="__codelineno-5-29" name="__codelineno-5-29" href="#__codelineno-5-29"></a>
+</span><span id="__span-5-30"><a id="__codelineno-5-30" name="__codelineno-5-30" href="#__codelineno-5-30"></a><span class="c1">// Beta retains tuples and propagates insertions and removals to consumers.</span>
+</span><span id="__span-5-31"><a id="__codelineno-5-31" name="__codelineno-5-31" href="#__codelineno-5-31"></a><span class="kd">type</span><span class="w"> </span><span class="nx">Beta</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-32"><a id="__codelineno-5-32" name="__codelineno-5-32" href="#__codelineno-5-32"></a><span class="w">    </span><span class="nx">Memory</span><span class="w"> </span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="nx">Tuple</span>
+</span><span id="__span-5-33"><a id="__codelineno-5-33" name="__codelineno-5-33" href="#__codelineno-5-33"></a><span class="w">    </span><span class="nx">Out</span><span class="w">    </span><span class="p">[]</span><span class="kd">func</span><span class="p">(</span><span class="nx">Tuple</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="p">)</span>
+</span><span id="__span-5-34"><a id="__codelineno-5-34" name="__codelineno-5-34" href="#__codelineno-5-34"></a><span class="p">}</span>
+</span><span id="__span-5-35"><a id="__codelineno-5-35" name="__codelineno-5-35" href="#__codelineno-5-35"></a>
+</span><span id="__span-5-36"><a id="__codelineno-5-36" name="__codelineno-5-36" href="#__codelineno-5-36"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">b</span><span class="w"> </span><span class="o">*</span><span class="nx">Beta</span><span class="p">)</span><span class="w"> </span><span class="nx">Push</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="nx">Tuple</span><span class="p">,</span><span class="w"> </span><span class="nx">add</span><span class="w"> </span><span class="kt">bool</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-37"><a id="__codelineno-5-37" name="__codelineno-5-37" href="#__codelineno-5-37"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">add</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-38"><a id="__codelineno-5-38" name="__codelineno-5-38" href="#__codelineno-5-38"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nx">_</span><span class="p">,</span><span class="w"> </span><span class="nx">exists</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">Memory</span><span class="p">[</span><span class="nx">t</span><span class="p">.</span><span class="nx">Key</span><span class="p">];</span><span class="w"> </span><span class="nx">exists</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-39"><a id="__codelineno-5-39" name="__codelineno-5-39" href="#__codelineno-5-39"></a><span class="w">            </span><span class="k">return</span>
+</span><span id="__span-5-40"><a id="__codelineno-5-40" name="__codelineno-5-40" href="#__codelineno-5-40"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-5-41"><a id="__codelineno-5-41" name="__codelineno-5-41" href="#__codelineno-5-41"></a><span class="w">        </span><span class="nx">b</span><span class="p">.</span><span class="nx">Memory</span><span class="p">[</span><span class="nx">t</span><span class="p">.</span><span class="nx">Key</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">t</span>
+</span><span id="__span-5-42"><a id="__codelineno-5-42" name="__codelineno-5-42" href="#__codelineno-5-42"></a><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-43"><a id="__codelineno-5-43" name="__codelineno-5-43" href="#__codelineno-5-43"></a><span class="w">        </span><span class="nx">stored</span><span class="p">,</span><span class="w"> </span><span class="nx">exists</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">Memory</span><span class="p">[</span><span class="nx">t</span><span class="p">.</span><span class="nx">Key</span><span class="p">]</span>
+</span><span id="__span-5-44"><a id="__codelineno-5-44" name="__codelineno-5-44" href="#__codelineno-5-44"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">!</span><span class="nx">exists</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-45"><a id="__codelineno-5-45" name="__codelineno-5-45" href="#__codelineno-5-45"></a><span class="w">            </span><span class="k">return</span>
+</span><span id="__span-5-46"><a id="__codelineno-5-46" name="__codelineno-5-46" href="#__codelineno-5-46"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-5-47"><a id="__codelineno-5-47" name="__codelineno-5-47" href="#__codelineno-5-47"></a><span class="w">        </span><span class="nx">t</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">stored</span>
+</span><span id="__span-5-48"><a id="__codelineno-5-48" name="__codelineno-5-48" href="#__codelineno-5-48"></a><span class="w">        </span><span class="nb">delete</span><span class="p">(</span><span class="nx">b</span><span class="p">.</span><span class="nx">Memory</span><span class="p">,</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">Key</span><span class="p">)</span>
+</span><span id="__span-5-49"><a id="__codelineno-5-49" name="__codelineno-5-49" href="#__codelineno-5-49"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-5-50"><a id="__codelineno-5-50" name="__codelineno-5-50" href="#__codelineno-5-50"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="nx">_</span><span class="p">,</span><span class="w"> </span><span class="nx">out</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">Out</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-51"><a id="__codelineno-5-51" name="__codelineno-5-51" href="#__codelineno-5-51"></a><span class="w">        </span><span class="nx">out</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span><span class="w"> </span><span class="nx">add</span><span class="p">)</span>
+</span><span id="__span-5-52"><a id="__codelineno-5-52" name="__codelineno-5-52" href="#__codelineno-5-52"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-5-53"><a id="__codelineno-5-53" name="__codelineno-5-53" href="#__codelineno-5-53"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>The two memory types retain different things: facts on the alpha side and tuples on the beta side. Deduplication by handle or tuple key suppresses repeated propagation of the same retained result.</p>
+<h3 id="53-join-a-new-result-with-the-retained-opposite-side">5.3 Join a new result with the retained opposite side</h3>
+<div class="language-go highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1">// Join extends a left tuple with a right fact satisfying a pure predicate.</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kd">type</span><span class="w"> </span><span class="nx">Join</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="nx">Left</span><span class="w">  </span><span class="o">*</span><span class="nx">Beta</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="nx">Right</span><span class="w"> </span><span class="o">*</span><span class="nx">Alpha</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">    </span><span class="nx">Test</span><span class="w">  </span><span class="kd">func</span><span class="p">(</span><span class="nx">Tuple</span><span class="p">,</span><span class="w"> </span><span class="nx">Fact</span><span class="p">)</span><span class="w"> </span><span class="kt">bool</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="nx">Next</span><span class="w">  </span><span class="o">*</span><span class="nx">Beta</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="p">}</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">j</span><span class="w"> </span><span class="o">*</span><span class="nx">Join</span><span class="p">)</span><span class="w"> </span><span class="nx">LeftEvent</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="nx">Tuple</span><span class="p">,</span><span class="w"> </span><span class="nx">add</span><span class="w"> </span><span class="kt">bool</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="nx">_</span><span class="p">,</span><span class="w"> </span><span class="nx">f</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">j</span><span class="p">.</span><span class="nx">Right</span><span class="p">.</span><span class="nx">Memory</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nx">j</span><span class="p">.</span><span class="nx">Test</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span><span class="w"> </span><span class="nx">f</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="w">            </span><span class="nx">j</span><span class="p">.</span><span class="nx">Next</span><span class="p">.</span><span class="nx">Push</span><span class="p">(</span><span class="nx">extend</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span><span class="w"> </span><span class="nx">f</span><span class="p">),</span><span class="w"> </span><span class="nx">add</span><span class="p">)</span>
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="p">}</span>
+</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>
+</span><span id="__span-6-17"><a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">j</span><span class="w"> </span><span class="o">*</span><span class="nx">Join</span><span class="p">)</span><span class="w"> </span><span class="nx">RightEvent</span><span class="p">(</span><span class="nx">f</span><span class="w"> </span><span class="nx">Fact</span><span class="p">,</span><span class="w"> </span><span class="nx">add</span><span class="w"> </span><span class="kt">bool</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-6-18"><a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="nx">_</span><span class="p">,</span><span class="w"> </span><span class="nx">t</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">j</span><span class="p">.</span><span class="nx">Left</span><span class="p">.</span><span class="nx">Memory</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-6-19"><a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nx">j</span><span class="p">.</span><span class="nx">Test</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span><span class="w"> </span><span class="nx">f</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-6-20"><a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a><span class="w">            </span><span class="nx">j</span><span class="p">.</span><span class="nx">Next</span><span class="p">.</span><span class="nx">Push</span><span class="p">(</span><span class="nx">extend</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span><span class="w"> </span><span class="nx">f</span><span class="p">),</span><span class="w"> </span><span class="nx">add</span><span class="p">)</span>
+</span><span id="__span-6-21"><a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-6-22"><a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-6-23"><a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>These methods are symmetric. A left event scans retained right facts; a right event scans retained left tuples. On insertion, matching pairs are added to the next beta memory. On removal, the same pairs are removed using their original handles. Reusing the predicate on removal is valid here because the retained fact snapshots never change.</p>
+<p>This implementation scans the opposite memory instead of maintaining reverse dependency links. That keeps deletion understandable, but makes its cost proportional to the opposite memory's size.</p>
+<h3 id="54-wire-the-graph-and-terminals">5.4 Wire the graph and terminals</h3>
+<div class="language-go highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1">// Engine owns working memory and the manually wired demonstration network.</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="kd">type</span><span class="w"> </span><span class="nx">Engine</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="nx">next</span><span class="w">                  </span><span class="kt">int</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">    </span><span class="nx">facts</span><span class="w">                 </span><span class="kd">map</span><span class="p">[</span><span class="kt">int</span><span class="p">]</span><span class="nx">Fact</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">    </span><span class="nx">gold</span><span class="p">,</span><span class="w"> </span><span class="nx">eligible</span><span class="p">,</span><span class="w"> </span><span class="nx">other</span><span class="w"> </span><span class="o">*</span><span class="nx">Alpha</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">    </span><span class="nx">left</span><span class="p">,</span><span class="w"> </span><span class="nx">bonus</span><span class="w">           </span><span class="o">*</span><span class="nx">Beta</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">    </span><span class="nx">pending</span><span class="w">               </span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">func</span><span class="p">()</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="p">}</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="kd">func</span><span class="w"> </span><span class="nx">NewEngine</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="nx">Engine</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="w">    </span><span class="nx">alpha</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="nx">test</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="kt">any</span><span class="p">)</span><span class="w"> </span><span class="kt">bool</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="nx">Alpha</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">Alpha</span><span class="p">{</span><span class="nx">Test</span><span class="p">:</span><span class="w"> </span><span class="nx">test</span><span class="p">,</span><span class="w"> </span><span class="nx">Memory</span><span class="p">:</span><span class="w"> </span><span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">int</span><span class="p">]</span><span class="nx">Fact</span><span class="p">)}</span>
+</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="w">    </span><span class="nx">e</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">Engine</span><span class="p">{</span>
+</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="w">        </span><span class="nx">facts</span><span class="p">:</span><span class="w">    </span><span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">int</span><span class="p">]</span><span class="nx">Fact</span><span class="p">),</span>
+</span><span id="__span-7-16"><a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a><span class="w">        </span><span class="nx">pending</span><span class="p">:</span><span class="w">  </span><span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">func</span><span class="p">()),</span>
+</span><span id="__span-7-17"><a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a><span class="w">        </span><span class="nx">left</span><span class="p">:</span><span class="w">     </span><span class="o">&amp;</span><span class="nx">Beta</span><span class="p">{</span><span class="nx">Memory</span><span class="p">:</span><span class="w"> </span><span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="nx">Tuple</span><span class="p">)},</span>
+</span><span id="__span-7-18"><a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a><span class="w">        </span><span class="nx">bonus</span><span class="p">:</span><span class="w">    </span><span class="o">&amp;</span><span class="nx">Beta</span><span class="p">{</span><span class="nx">Memory</span><span class="p">:</span><span class="w"> </span><span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="nx">Tuple</span><span class="p">)},</span>
+</span><span id="__span-7-19"><a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a><span class="w">        </span><span class="nx">gold</span><span class="p">:</span><span class="w">     </span><span class="nx">alpha</span><span class="p">(</span><span class="kd">func</span><span class="p">(</span><span class="nx">v</span><span class="w"> </span><span class="kt">any</span><span class="p">)</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">v</span><span class="p">.(</span><span class="nx">Account</span><span class="p">).</span><span class="nx">Status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;Gold&quot;</span><span class="w"> </span><span class="p">}),</span>
+</span><span id="__span-7-20"><a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a><span class="w">        </span><span class="nx">eligible</span><span class="p">:</span><span class="w"> </span><span class="nx">alpha</span><span class="p">(</span><span class="kd">func</span><span class="p">(</span><span class="nx">v</span><span class="w"> </span><span class="kt">any</span><span class="p">)</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">v</span><span class="p">.(</span><span class="nx">Flight</span><span class="p">).</span><span class="nx">Miles</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">500</span><span class="w"> </span><span class="p">}),</span>
+</span><span id="__span-7-21"><a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a><span class="w">        </span><span class="nx">other</span><span class="p">:</span><span class="w">    </span><span class="nx">alpha</span><span class="p">(</span><span class="kd">func</span><span class="p">(</span><span class="nx">v</span><span class="w"> </span><span class="kt">any</span><span class="p">)</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">v</span><span class="p">.(</span><span class="nx">Flight</span><span class="p">).</span><span class="nx">Airline</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s">&quot;Partner&quot;</span><span class="w"> </span><span class="p">}),</span>
+</span><span id="__span-7-22"><a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-7-23"><a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a><span class="w">    </span><span class="nx">terminal</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="nx">rule</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">action</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="nx">Tuple</span><span class="p">))</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="nx">Tuple</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-24"><a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="nx">Tuple</span><span class="p">,</span><span class="w"> </span><span class="nx">add</span><span class="w"> </span><span class="kt">bool</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-25"><a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a><span class="w">            </span><span class="nx">key</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">rule</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;/&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">Key</span>
+</span><span id="__span-7-26"><a id="__codelineno-7-26" name="__codelineno-7-26" href="#__codelineno-7-26"></a><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="nx">add</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-27"><a id="__codelineno-7-27" name="__codelineno-7-27" href="#__codelineno-7-27"></a><span class="w">                </span><span class="nx">e</span><span class="p">.</span><span class="nx">pending</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kd">func</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">action</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+</span><span id="__span-7-28"><a id="__codelineno-7-28" name="__codelineno-7-28" href="#__codelineno-7-28"></a><span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-29"><a id="__codelineno-7-29" name="__codelineno-7-29" href="#__codelineno-7-29"></a><span class="w">                </span><span class="nb">delete</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">pending</span><span class="p">,</span><span class="w"> </span><span class="nx">key</span><span class="p">)</span>
+</span><span id="__span-7-30"><a id="__codelineno-7-30" name="__codelineno-7-30" href="#__codelineno-7-30"></a><span class="w">            </span><span class="p">}</span>
+</span><span id="__span-7-31"><a id="__codelineno-7-31" name="__codelineno-7-31" href="#__codelineno-7-31"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-7-32"><a id="__codelineno-7-32" name="__codelineno-7-32" href="#__codelineno-7-32"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-7-33"><a id="__codelineno-7-33" name="__codelineno-7-33" href="#__codelineno-7-33"></a><span class="w">    </span><span class="nx">base</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">terminal</span><span class="p">(</span><span class="s">&quot;base&quot;</span><span class="p">,</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="nx">Tuple</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-34"><a id="__codelineno-7-34" name="__codelineno-7-34" href="#__codelineno-7-34"></a><span class="w">        </span><span class="nx">f</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">Facts</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">Value</span><span class="p">.(</span><span class="nx">Flight</span><span class="p">)</span>
+</span><span id="__span-7-35"><a id="__codelineno-7-35" name="__codelineno-7-35" href="#__codelineno-7-35"></a><span class="w">        </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;base %s: %d miles\n&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">f</span><span class="p">.</span><span class="nx">ID</span><span class="p">,</span><span class="w"> </span><span class="nx">f</span><span class="p">.</span><span class="nx">Miles</span><span class="p">)</span>
+</span><span id="__span-7-36"><a id="__codelineno-7-36" name="__codelineno-7-36" href="#__codelineno-7-36"></a><span class="w">    </span><span class="p">})</span>
+</span><span id="__span-7-37"><a id="__codelineno-7-37" name="__codelineno-7-37" href="#__codelineno-7-37"></a><span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">bonus</span><span class="p">.</span><span class="nx">Out</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">append</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">bonus</span><span class="p">.</span><span class="nx">Out</span><span class="p">,</span><span class="w"> </span><span class="nx">terminal</span><span class="p">(</span><span class="s">&quot;bonus&quot;</span><span class="p">,</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="nx">Tuple</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-38"><a id="__codelineno-7-38" name="__codelineno-7-38" href="#__codelineno-7-38"></a><span class="w">        </span><span class="nx">a</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">Facts</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">Value</span><span class="p">.(</span><span class="nx">Account</span><span class="p">)</span>
+</span><span id="__span-7-39"><a id="__codelineno-7-39" name="__codelineno-7-39" href="#__codelineno-7-39"></a><span class="w">        </span><span class="nx">f</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">Facts</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">Value</span><span class="p">.(</span><span class="nx">Flight</span><span class="p">)</span>
+</span><span id="__span-7-40"><a id="__codelineno-7-40" name="__codelineno-7-40" href="#__codelineno-7-40"></a><span class="w">        </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;bonus %s/%s: %d miles\n&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">a</span><span class="p">.</span><span class="nx">ID</span><span class="p">,</span><span class="w"> </span><span class="nx">f</span><span class="p">.</span><span class="nx">ID</span><span class="p">,</span><span class="w"> </span><span class="nx">f</span><span class="p">.</span><span class="nx">Miles</span><span class="p">)</span>
+</span><span id="__span-7-41"><a id="__codelineno-7-41" name="__codelineno-7-41" href="#__codelineno-7-41"></a><span class="w">    </span><span class="p">}))</span>
+</span><span id="__span-7-42"><a id="__codelineno-7-42" name="__codelineno-7-42" href="#__codelineno-7-42"></a><span class="w">    </span><span class="nx">j</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">Join</span><span class="p">{</span>
+</span><span id="__span-7-43"><a id="__codelineno-7-43" name="__codelineno-7-43" href="#__codelineno-7-43"></a><span class="w">        </span><span class="nx">Left</span><span class="p">:</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">left</span><span class="p">,</span><span class="w"> </span><span class="nx">Right</span><span class="p">:</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">other</span><span class="p">,</span><span class="w"> </span><span class="nx">Next</span><span class="p">:</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">bonus</span><span class="p">,</span>
+</span><span id="__span-7-44"><a id="__codelineno-7-44" name="__codelineno-7-44" href="#__codelineno-7-44"></a><span class="w">        </span><span class="nx">Test</span><span class="p">:</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="nx">Tuple</span><span class="p">,</span><span class="w"> </span><span class="nx">f</span><span class="w"> </span><span class="nx">Fact</span><span class="p">)</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-45"><a id="__codelineno-7-45" name="__codelineno-7-45" href="#__codelineno-7-45"></a><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">Facts</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">Value</span><span class="p">.(</span><span class="nx">Account</span><span class="p">).</span><span class="nx">ID</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nx">f</span><span class="p">.</span><span class="nx">Value</span><span class="p">.(</span><span class="nx">Flight</span><span class="p">).</span><span class="nx">AccountID</span>
+</span><span id="__span-7-46"><a id="__codelineno-7-46" name="__codelineno-7-46" href="#__codelineno-7-46"></a><span class="w">        </span><span class="p">},</span>
+</span><span id="__span-7-47"><a id="__codelineno-7-47" name="__codelineno-7-47" href="#__codelineno-7-47"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-7-48"><a id="__codelineno-7-48" name="__codelineno-7-48" href="#__codelineno-7-48"></a><span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">gold</span><span class="p">.</span><span class="nx">Out</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">append</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">gold</span><span class="p">.</span><span class="nx">Out</span><span class="p">,</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="nx">f</span><span class="w"> </span><span class="nx">Fact</span><span class="p">,</span><span class="w"> </span><span class="nx">add</span><span class="w"> </span><span class="kt">bool</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-49"><a id="__codelineno-7-49" name="__codelineno-7-49" href="#__codelineno-7-49"></a><span class="w">        </span><span class="nx">e</span><span class="p">.</span><span class="nx">left</span><span class="p">.</span><span class="nx">Push</span><span class="p">(</span><span class="nx">singleton</span><span class="p">(</span><span class="nx">f</span><span class="p">),</span><span class="w"> </span><span class="nx">add</span><span class="p">)</span>
+</span><span id="__span-7-50"><a id="__codelineno-7-50" name="__codelineno-7-50" href="#__codelineno-7-50"></a><span class="w">    </span><span class="p">})</span>
+</span><span id="__span-7-51"><a id="__codelineno-7-51" name="__codelineno-7-51" href="#__codelineno-7-51"></a><span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">left</span><span class="p">.</span><span class="nx">Out</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">append</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">left</span><span class="p">.</span><span class="nx">Out</span><span class="p">,</span><span class="w"> </span><span class="nx">j</span><span class="p">.</span><span class="nx">LeftEvent</span><span class="p">)</span>
+</span><span id="__span-7-52"><a id="__codelineno-7-52" name="__codelineno-7-52" href="#__codelineno-7-52"></a><span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">eligible</span><span class="p">.</span><span class="nx">Out</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">append</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">eligible</span><span class="p">.</span><span class="nx">Out</span><span class="p">,</span>
+</span><span id="__span-7-53"><a id="__codelineno-7-53" name="__codelineno-7-53" href="#__codelineno-7-53"></a><span class="w">        </span><span class="kd">func</span><span class="p">(</span><span class="nx">f</span><span class="w"> </span><span class="nx">Fact</span><span class="p">,</span><span class="w"> </span><span class="nx">add</span><span class="w"> </span><span class="kt">bool</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">base</span><span class="p">(</span><span class="nx">singleton</span><span class="p">(</span><span class="nx">f</span><span class="p">),</span><span class="w"> </span><span class="nx">add</span><span class="p">)</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">other</span><span class="p">.</span><span class="nx">Push</span><span class="p">)</span>
+</span><span id="__span-7-54"><a id="__codelineno-7-54" name="__codelineno-7-54" href="#__codelineno-7-54"></a><span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">other</span><span class="p">.</span><span class="nx">Out</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">append</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">other</span><span class="p">.</span><span class="nx">Out</span><span class="p">,</span><span class="w"> </span><span class="nx">j</span><span class="p">.</span><span class="nx">RightEvent</span><span class="p">)</span>
+</span><span id="__span-7-55"><a id="__codelineno-7-55" name="__codelineno-7-55" href="#__codelineno-7-55"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">e</span>
+</span><span id="__span-7-56"><a id="__codelineno-7-56" name="__codelineno-7-56" href="#__codelineno-7-56"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>The constructor is the executable version of the diagram. <code>eligible.Out</code> shares the miles filter between the base terminal and <code>other</code>. <code>gold.Out</code> adapts accounts into tuples, and the join checks the actual account ID.</p>
+<p>Each activation key combines a rule name and tuple identity. A terminal's insertion event schedules an action; its removal event cancels that pending action. Matching itself produces no output and changes no business records.</p>
+<h3 id="55-working-memory-operations-and-the-executable-trace">5.5 Working-memory operations and the executable trace</h3>
+<div class="language-go highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1">// Insert allocates a fresh handle, even when business values are identical.</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">e</span><span class="w"> </span><span class="o">*</span><span class="nx">Engine</span><span class="p">)</span><span class="w"> </span><span class="nx">Insert</span><span class="p">(</span><span class="nx">v</span><span class="w"> </span><span class="kt">any</span><span class="p">)</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">    </span><span class="k">switch</span><span class="w"> </span><span class="nx">v</span><span class="p">.(</span><span class="kd">type</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="nx">Account</span><span class="p">,</span><span class="w"> </span><span class="nx">Flight</span><span class="p">:</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">    </span><span class="k">default</span><span class="p">:</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">        </span><span class="nb">panic</span><span class="p">(</span><span class="s">&quot;unsupported fact type&quot;</span><span class="p">)</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">next</span><span class="o">++</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">    </span><span class="nx">f</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">Fact</span><span class="p">{</span><span class="nx">e</span><span class="p">.</span><span class="nx">next</span><span class="p">,</span><span class="w"> </span><span class="nx">v</span><span class="p">}</span>
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">facts</span><span class="p">[</span><span class="nx">f</span><span class="p">.</span><span class="nx">Handle</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">f</span>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">    </span><span class="k">switch</span><span class="w"> </span><span class="nx">v</span><span class="p">.(</span><span class="kd">type</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="nx">Account</span><span class="p">:</span>
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="w">        </span><span class="nx">e</span><span class="p">.</span><span class="nx">gold</span><span class="p">.</span><span class="nx">Push</span><span class="p">(</span><span class="nx">f</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
+</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="nx">Flight</span><span class="p">:</span>
+</span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a><span class="w">        </span><span class="nx">e</span><span class="p">.</span><span class="nx">eligible</span><span class="p">.</span><span class="nx">Push</span><span class="p">(</span><span class="nx">f</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
+</span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-8-17"><a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">f</span><span class="p">.</span><span class="nx">Handle</span>
+</span><span id="__span-8-18"><a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a><span class="p">}</span>
+</span><span id="__span-8-19"><a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a>
+</span><span id="__span-8-20"><a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a><span class="c1">// Retract invalidates dependent tuples and cancels their pending actions.</span>
+</span><span id="__span-8-21"><a id="__codelineno-8-21" name="__codelineno-8-21" href="#__codelineno-8-21"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">e</span><span class="w"> </span><span class="o">*</span><span class="nx">Engine</span><span class="p">)</span><span class="w"> </span><span class="nx">Retract</span><span class="p">(</span><span class="nx">handle</span><span class="w"> </span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-8-22"><a id="__codelineno-8-22" name="__codelineno-8-22" href="#__codelineno-8-22"></a><span class="w">    </span><span class="nx">f</span><span class="p">,</span><span class="w"> </span><span class="nx">exists</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">facts</span><span class="p">[</span><span class="nx">handle</span><span class="p">]</span>
+</span><span id="__span-8-23"><a id="__codelineno-8-23" name="__codelineno-8-23" href="#__codelineno-8-23"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">!</span><span class="nx">exists</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-8-24"><a id="__codelineno-8-24" name="__codelineno-8-24" href="#__codelineno-8-24"></a><span class="w">        </span><span class="k">return</span>
+</span><span id="__span-8-25"><a id="__codelineno-8-25" name="__codelineno-8-25" href="#__codelineno-8-25"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-8-26"><a id="__codelineno-8-26" name="__codelineno-8-26" href="#__codelineno-8-26"></a><span class="w">    </span><span class="nb">delete</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">facts</span><span class="p">,</span><span class="w"> </span><span class="nx">handle</span><span class="p">)</span>
+</span><span id="__span-8-27"><a id="__codelineno-8-27" name="__codelineno-8-27" href="#__codelineno-8-27"></a><span class="w">    </span><span class="k">switch</span><span class="w"> </span><span class="nx">f</span><span class="p">.</span><span class="nx">Value</span><span class="p">.(</span><span class="kd">type</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-8-28"><a id="__codelineno-8-28" name="__codelineno-8-28" href="#__codelineno-8-28"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="nx">Account</span><span class="p">:</span>
+</span><span id="__span-8-29"><a id="__codelineno-8-29" name="__codelineno-8-29" href="#__codelineno-8-29"></a><span class="w">        </span><span class="nx">e</span><span class="p">.</span><span class="nx">gold</span><span class="p">.</span><span class="nx">Push</span><span class="p">(</span><span class="nx">f</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
+</span><span id="__span-8-30"><a id="__codelineno-8-30" name="__codelineno-8-30" href="#__codelineno-8-30"></a><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="nx">Flight</span><span class="p">:</span>
+</span><span id="__span-8-31"><a id="__codelineno-8-31" name="__codelineno-8-31" href="#__codelineno-8-31"></a><span class="w">        </span><span class="nx">e</span><span class="p">.</span><span class="nx">eligible</span><span class="p">.</span><span class="nx">Push</span><span class="p">(</span><span class="nx">f</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
+</span><span id="__span-8-32"><a id="__codelineno-8-32" name="__codelineno-8-32" href="#__codelineno-8-32"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-8-33"><a id="__codelineno-8-33" name="__codelineno-8-33" href="#__codelineno-8-33"></a><span class="p">}</span>
+</span><span id="__span-8-34"><a id="__codelineno-8-34" name="__codelineno-8-34" href="#__codelineno-8-34"></a>
+</span><span id="__span-8-35"><a id="__codelineno-8-35" name="__codelineno-8-35" href="#__codelineno-8-35"></a><span class="c1">// Fire executes pending actions in key order for reproducible demo output.</span>
+</span><span id="__span-8-36"><a id="__codelineno-8-36" name="__codelineno-8-36" href="#__codelineno-8-36"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">e</span><span class="w"> </span><span class="o">*</span><span class="nx">Engine</span><span class="p">)</span><span class="w"> </span><span class="nx">Fire</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-8-37"><a id="__codelineno-8-37" name="__codelineno-8-37" href="#__codelineno-8-37"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">pending</span><span class="p">)</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-8-38"><a id="__codelineno-8-38" name="__codelineno-8-38" href="#__codelineno-8-38"></a><span class="w">        </span><span class="nx">keys</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nb">make</span><span class="p">([]</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">pending</span><span class="p">))</span>
+</span><span id="__span-8-39"><a id="__codelineno-8-39" name="__codelineno-8-39" href="#__codelineno-8-39"></a><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="nx">key</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">pending</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-8-40"><a id="__codelineno-8-40" name="__codelineno-8-40" href="#__codelineno-8-40"></a><span class="w">            </span><span class="nx">keys</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">append</span><span class="p">(</span><span class="nx">keys</span><span class="p">,</span><span class="w"> </span><span class="nx">key</span><span class="p">)</span>
+</span><span id="__span-8-41"><a id="__codelineno-8-41" name="__codelineno-8-41" href="#__codelineno-8-41"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-8-42"><a id="__codelineno-8-42" name="__codelineno-8-42" href="#__codelineno-8-42"></a><span class="w">        </span><span class="nx">sort</span><span class="p">.</span><span class="nx">Strings</span><span class="p">(</span><span class="nx">keys</span><span class="p">)</span>
+</span><span id="__span-8-43"><a id="__codelineno-8-43" name="__codelineno-8-43" href="#__codelineno-8-43"></a><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="nx">_</span><span class="p">,</span><span class="w"> </span><span class="nx">key</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">keys</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-8-44"><a id="__codelineno-8-44" name="__codelineno-8-44" href="#__codelineno-8-44"></a><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="nx">action</span><span class="p">,</span><span class="w"> </span><span class="nx">exists</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">pending</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span><span class="w"> </span><span class="nx">exists</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-8-45"><a id="__codelineno-8-45" name="__codelineno-8-45" href="#__codelineno-8-45"></a><span class="w">                </span><span class="nb">delete</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">pending</span><span class="p">,</span><span class="w"> </span><span class="nx">key</span><span class="p">)</span>
+</span><span id="__span-8-46"><a id="__codelineno-8-46" name="__codelineno-8-46" href="#__codelineno-8-46"></a><span class="w">                </span><span class="nx">action</span><span class="p">()</span>
+</span><span id="__span-8-47"><a id="__codelineno-8-47" name="__codelineno-8-47" href="#__codelineno-8-47"></a><span class="w">            </span><span class="p">}</span>
+</span><span id="__span-8-48"><a id="__codelineno-8-48" name="__codelineno-8-48" href="#__codelineno-8-48"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-8-49"><a id="__codelineno-8-49" name="__codelineno-8-49" href="#__codelineno-8-49"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-8-50"><a id="__codelineno-8-50" name="__codelineno-8-50" href="#__codelineno-8-50"></a><span class="p">}</span>
+</span><span id="__span-8-51"><a id="__codelineno-8-51" name="__codelineno-8-51" href="#__codelineno-8-51"></a>
+</span><span id="__span-8-52"><a id="__codelineno-8-52" name="__codelineno-8-52" href="#__codelineno-8-52"></a><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">e</span><span class="w"> </span><span class="o">*</span><span class="nx">Engine</span><span class="p">)</span><span class="w"> </span><span class="nx">Report</span><span class="p">(</span><span class="nx">label</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-8-53"><a id="__codelineno-8-53" name="__codelineno-8-53" href="#__codelineno-8-53"></a><span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;%s: eligible=%d nonPartner=%d gold=%d bonus=%d pending=%d\n&quot;</span><span class="p">,</span>
+</span><span id="__span-8-54"><a id="__codelineno-8-54" name="__codelineno-8-54" href="#__codelineno-8-54"></a><span class="w">        </span><span class="nx">label</span><span class="p">,</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">eligible</span><span class="p">.</span><span class="nx">Memory</span><span class="p">),</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">other</span><span class="p">.</span><span class="nx">Memory</span><span class="p">),</span>
+</span><span id="__span-8-55"><a id="__codelineno-8-55" name="__codelineno-8-55" href="#__codelineno-8-55"></a><span class="w">        </span><span class="nb">len</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">left</span><span class="p">.</span><span class="nx">Memory</span><span class="p">),</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">bonus</span><span class="p">.</span><span class="nx">Memory</span><span class="p">),</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">pending</span><span class="p">))</span>
+</span><span id="__span-8-56"><a id="__codelineno-8-56" name="__codelineno-8-56" href="#__codelineno-8-56"></a><span class="p">}</span>
+</span><span id="__span-8-57"><a id="__codelineno-8-57" name="__codelineno-8-57" href="#__codelineno-8-57"></a>
+</span><span id="__span-8-58"><a id="__codelineno-8-58" name="__codelineno-8-58" href="#__codelineno-8-58"></a><span class="kd">func</span><span class="w"> </span><span class="nx">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-8-59"><a id="__codelineno-8-59" name="__codelineno-8-59" href="#__codelineno-8-59"></a><span class="w">    </span><span class="nx">e</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">NewEngine</span><span class="p">()</span>
+</span><span id="__span-8-60"><a id="__codelineno-8-60" name="__codelineno-8-60" href="#__codelineno-8-60"></a><span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">Insert</span><span class="p">(</span><span class="nx">Account</span><span class="p">{</span><span class="s">&quot;A1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Gold&quot;</span><span class="p">})</span>
+</span><span id="__span-8-61"><a id="__codelineno-8-61" name="__codelineno-8-61" href="#__codelineno-8-61"></a><span class="w">    </span><span class="nx">silver</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">Insert</span><span class="p">(</span><span class="nx">Account</span><span class="p">{</span><span class="s">&quot;A2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Silver&quot;</span><span class="p">})</span>
+</span><span id="__span-8-62"><a id="__codelineno-8-62" name="__codelineno-8-62" href="#__codelineno-8-62"></a><span class="w">    </span><span class="nx">f1</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">Insert</span><span class="p">(</span><span class="nx">Flight</span><span class="p">{</span><span class="s">&quot;F1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;A1&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2419</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Original&quot;</span><span class="p">})</span>
+</span><span id="__span-8-63"><a id="__codelineno-8-63" name="__codelineno-8-63" href="#__codelineno-8-63"></a><span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">Insert</span><span class="p">(</span><span class="nx">Flight</span><span class="p">{</span><span class="s">&quot;F2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;A2&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">800</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Original&quot;</span><span class="p">})</span>
+</span><span id="__span-8-64"><a id="__codelineno-8-64" name="__codelineno-8-64" href="#__codelineno-8-64"></a><span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">Insert</span><span class="p">(</span><span class="nx">Flight</span><span class="p">{</span><span class="s">&quot;F3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;A1&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">300</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Original&quot;</span><span class="p">})</span>
+</span><span id="__span-8-65"><a id="__codelineno-8-65" name="__codelineno-8-65" href="#__codelineno-8-65"></a><span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">Insert</span><span class="p">(</span><span class="nx">Flight</span><span class="p">{</span><span class="s">&quot;F4&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;A1&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">900</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Partner&quot;</span><span class="p">})</span>
+</span><span id="__span-8-66"><a id="__codelineno-8-66" name="__codelineno-8-66" href="#__codelineno-8-66"></a><span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">Report</span><span class="p">(</span><span class="s">&quot;before retraction&quot;</span><span class="p">)</span>
+</span><span id="__span-8-67"><a id="__codelineno-8-67" name="__codelineno-8-67" href="#__codelineno-8-67"></a><span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">Retract</span><span class="p">(</span><span class="nx">f1</span><span class="p">)</span>
+</span><span id="__span-8-68"><a id="__codelineno-8-68" name="__codelineno-8-68" href="#__codelineno-8-68"></a><span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">Report</span><span class="p">(</span><span class="s">&quot;after retraction&quot;</span><span class="p">)</span>
+</span><span id="__span-8-69"><a id="__codelineno-8-69" name="__codelineno-8-69" href="#__codelineno-8-69"></a><span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">Fire</span><span class="p">()</span>
+</span><span id="__span-8-70"><a id="__codelineno-8-70" name="__codelineno-8-70" href="#__codelineno-8-70"></a><span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">Retract</span><span class="p">(</span><span class="nx">silver</span><span class="p">)</span>
+</span><span id="__span-8-71"><a id="__codelineno-8-71" name="__codelineno-8-71" href="#__codelineno-8-71"></a><span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">Insert</span><span class="p">(</span><span class="nx">Account</span><span class="p">{</span><span class="s">&quot;A2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Gold&quot;</span><span class="p">})</span>
+</span><span id="__span-8-72"><a id="__codelineno-8-72" name="__codelineno-8-72" href="#__codelineno-8-72"></a><span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">Report</span><span class="p">(</span><span class="s">&quot;after account replacement&quot;</span><span class="p">)</span>
+</span><span id="__span-8-73"><a id="__codelineno-8-73" name="__codelineno-8-73" href="#__codelineno-8-73"></a><span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">Fire</span><span class="p">()</span>
+</span><span id="__span-8-74"><a id="__codelineno-8-74" name="__codelineno-8-74" href="#__codelineno-8-74"></a><span class="p">}</span>
+</span></code></pre></div>
+<p><code>Insert</code> and <code>Retract</code> use a type switch for routing. <code>Fire</code> drains the agenda in sorted activation-key order solely to make this example's output reproducible. It checks that each action is still pending before calling it. This ordering is a demonstration policy, not part of the Rete matching algorithm.</p>
+<p>Clone the project and run its package and tests:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/Kicey/rete-algorithm-demo.git
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nb">cd</span><span class="w"> </span>rete-algorithm-demo
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>go<span class="w"> </span>run<span class="w"> </span>.
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>go<span class="w"> </span><span class="nb">test</span><span class="w"> </span>./...
+</span></code></pre></div>
+<p><code>git clone</code> downloads the source into a local directory, and <code>cd</code> enters it. From an existing checkout, start with <code>go run .</code>: it compiles and executes the current package without installing a binary. <code>go test ./...</code> runs tests for all packages under that directory. Go may write to its build cache; the demonstration keeps state in memory and prints to standard output, with no external packages or service.</p>
+<p>Expected output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>before retraction: eligible=3 nonPartner=2 gold=1 bonus=1 pending=4
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>after retraction: eligible=2 nonPartner=1 gold=1 bonus=0 pending=2
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>base F2: 800 miles
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>base F4: 900 miles
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>after account replacement: eligible=2 nonPartner=1 gold=2 bonus=1 pending=1
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>bonus A2/F2: 800 miles
+</span></code></pre></div>
+<p>Before the first <code>Fire</code>, there are four pending activations. Removing <code>F1</code> cancels its base and bonus activations, leaving only the base proposals for <code>F2</code> and <code>F4</code>. Replacing the Silver <code>A2</code> fact with a Gold snapshot later creates a bonus activation for the already retained <code>F2</code>.</p>
+<p>The test suite in <code>rete_test.go</code> uses a separate naïve matcher as an oracle. It compares joined tuple identities and pending activations after every change, covering all 24 arrival permutations of four facts and 1,000 seeded insert/retract operations. Additional cases exercise replacement snapshots, predicate boundaries, cancellation before firing, repeated <code>Fire</code> calls, and independent storage for sibling tuples. This checks that incremental maintenance produces the same matches as full recomputation.</p>
+<h2 id="6-retraction-modification-and-action-lifetime">6. Retraction, modification, and action lifetime</h2>
+<p>Consider retracting <code>F1</code> by its handle. It leaves working memory and <code>M_E</code>. The removal then follows both consumers: the base terminal cancels its activation, and <code>M_N</code> removes the flight and notifies the join. The join removes <code>(A1, F1)</code> from <code>B_B</code>, causing the bonus terminal to cancel its activation.</p>
+<p>Retracting <code>A1</code> follows the other path: remove it from <code>M_G</code>, remove its singleton tuple from <code>B_G</code>, then remove every joined tuple it supported. Other accounts and their matches remain retained.</p>
+<p>Our example models a modification as two operations: retract the old handle, then insert a replacement snapshot. <code>main</code> does this for <code>A2</code>, changing its status from Silver to Gold. The business ID stays <code>A2</code>, while the engine handle changes. The newly admitted left tuple joins with the retained <code>F2</code> without reasserting that flight. Production engines can optimize updates and preserve handles; applications must still notify the engine of changes. See the <a href="https://docs.drools.org/6.5.0.Final/drools-docs/html/ch07.html">Drools update and deletion documentation</a>.</p>
+<p>After <code>Fire</code>, the tuple remains in memory but its activation is no longer pending. Calling <code>Fire</code> again does nothing unless a subsequent change creates a new activation. Retracting and reinserting a fact creates a new match lifetime and may activate the rule again, even if its business values are identical.</p>
+<p><strong>Removing a match does not undo an executed action.</strong> If a reward was already written to a ledger, removing its supporting flight does not reverse that write. Compensation and idempotency belong to application policy. Likewise, automatically retracting facts logically derived by rules requires truth-maintenance support, which this matcher does not implement.</p>
+<h2 id="7-derive-the-performance-benefit-and-its-limits">7. Derive the performance benefit and its limits</h2>
+<p>For one join, let <code>L</code> be its retained left tuples and <code>R</code> its retained right facts. Its result is the relational join <code>J = L ⋈ R</code>. For an insertion on one side while the other side stays unchanged:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>new left tuples ΔL:  new joined tuples ΔJ = ΔL ⋈ R
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>new right facts ΔR:  new joined tuples ΔJ = L ⋈ ΔR
+</span></code></pre></div>
+<p>The old join results stay in memory. We only compute the contribution of the new input. With deletions, we remove the joined tuples supported by the removed input. This is the connection between Rete and incremental maintenance of relational query results.</p>
+<p>Let <code>l = |L|</code>, <code>r = |R|</code>, and <code>j = |J|</code>. Recomputing an unindexed join checks <code>l × r</code> candidate pairs. In our unindexed implementation, inserting one right fact checks <code>l</code> candidates; inserting one left tuple checks <code>r</code>. Removing one input also scans the opposite memory. These counts describe join-predicate evaluations; filtering, tuple construction, downstream propagation, and agenda processing add their own costs.</p>
+<p>For example, with 1,000 Gold tuples and 10,000 qualifying flights, full recomputation considers 10 million pairs. One additional qualifying flight scans 1,000 Gold tuples. A hash index keyed by account ID could further restrict the candidates to the relevant account bucket, but that index is an additional optimization, not a consequence of merely storing memories.</p>
+<p>The memories for one fixed-length join require space proportional to <code>l + r + j</code>, apart from working memory and the agenda. If every left tuple matches every right fact, <code>j</code> can reach <code>l × r</code>; chaining more joins can create even larger intermediate results. Storing matches does not eliminate that combinatorial growth.</p>
+<p>Rete's benefit is strongest when rules share conditions, working memory changes incrementally, and retained partial results are useful across many changes. For a few simple rules evaluated once, direct code can be easier and cheaper. Rete has no blanket constant-time insertion guarantee and no unconditional speed advantage.</p>
+<h2 id="8-scope-and-further-reading">8. Scope and further reading</h2>
+<p>This program implements a manually constructed network for positive conditions, shared alpha filters, tuple joins, insertion/removal propagation, and a minimal agenda. A production engine also needs decisions about:</p>
 <ul>
-<li><code>Account</code></li>
-<li><code>Flight</code></li>
+<li>Compiling rule definitions, ordering patterns, and sharing compatible beta paths.</li>
+<li>Indexing joins and tracking dependencies to reduce removal scans.</li>
+<li>Negation, existence, and aggregation, whose match lifetimes need additional bookkeeping.</li>
+<li>Agenda priorities, action-driven updates, and policies preventing unwanted repeated effects.</li>
+<li>Concurrency, fact ownership, and resource limits for large partial-match memories.</li>
 </ul>
-<p>Three rules are modeled:</p>
-<ol>
-<li>If <code>Account.RewardMiles &gt; 100000</code>, assign Gold status.</li>
-<li>If <code>Flight.Miles &gt;= 500</code>, reward flight miles.</li>
-<li>If account is Gold and flight airline is not partner, reward 100% bonus miles.</li>
-</ol>
-<p>In the code, rule 3 is represented as a join between:</p>
+<p>The reusable principle is to retain the results of each rule prefix and propagate changes to those results through the network. Alpha filtering, beta joining, and activation management make that principle concrete.</p>
+<p>References:</p>
 <ul>
-<li>Left side: accounts that passed the Gold-related alpha condition</li>
-<li>Right side: flights that passed <code>Flight.Airline != "Partner"</code></li>
-</ul>
-<hr />
-<h2 id="2-network-shape-what-gets-built-once">2. Network Shape (What Gets Built Once)</h2>
-<p>The demo constructs the network at startup (<code>main.go</code>) and runs facts through it (<code>rete.go</code>):</p>
-<ol>
-<li><code>ReteNode</code> root receives all asserted facts.</li>
-<li><code>ObjectTypeNode</code> branches by Go type (<code>Account</code> vs <code>Flight</code>).</li>
-<li><code>AlphaNode</code> checks single-fact conditions (for example <code>Miles &gt;= 500</code>).</li>
-<li><code>AlphaMemory</code> stores matched facts and forwards them.</li>
-<li><code>BetaNode</code> joins left tuples with right facts.</li>
-<li><code>BetaMemory</code> stores left facts, right facts, and joined tuples.</li>
-<li><code>TerminalNode</code> executes actions when a rule is fully matched.</li>
-</ol>
-<p>This directly mirrors the alpha-network + beta-network separation described in the two referenced articles.</p>
-<hr />
-<h2 id="3-how-facts-are-processed-on-the-rule-set">3. How Facts Are Processed on the Rule Set</h2>
-<p>Now follow the runtime log step by step.</p>
-<h3 id="step-a-assert-accountidjoe123-rewardmiles150000-statusunknown">Step A: Assert <code>Account{ID:Joe123, RewardMiles:150000, Status:Unknown}</code></h3>
-<p>The log shows this path:</p>
-<ol>
-<li>Root receives the account fact.</li>
-<li><code>ObjectTypeNode(Account)</code> matches type.</li>
-<li>Alpha condition <code>Account.RewardMiles &gt; 100000</code> passes.</li>
-<li><code>AlphaMemory</code> stores the account fact.</li>
-<li>Terminal for "Assign Gold Status" fires.</li>
-<li>The same matched account is also sent to the join's left input (<code>BetaNode-LeftActivate</code>).</li>
-</ol>
-<p>Important detail: after this step, there is still no joined rule firing yet, because the right-side flight fact for the join has not arrived.</p>
-<h3 id="step-b-assert-flightmiles2419-categoryeconomy-airlineoriginal">Step B: Assert <code>Flight{Miles:2419, Category:Economy, Airline:Original}</code></h3>
-<p>The log then shows two independent alpha matches on the flight branch:</p>
-<ol>
-<li><code>Flight.Miles &gt;= 500</code> passes.</li>
-<li>Terminal for "Reward Flight Miles" fires.</li>
-<li><code>Flight.Airline != Partner</code> also passes.</li>
-<li>That fact is stored and sent to join right input (<code>BetaNode-RightActivate</code>).</li>
-</ol>
-<p>Now the join can complete:</p>
-<ol>
-<li><code>BetaNode</code> checks right fact against cached left facts.</li>
-<li>A joined tuple <code>[Account, Flight]</code> is produced.</li>
-<li><code>BetaMemory</code> stores that tuple.</li>
-<li>Terminal for "+100% Bonus Miles for Gold Status" fires.</li>
-</ol>
-<p>So in one runtime cycle with two assertions, the engine executes:</p>
-<ul>
-<li>Gold assignment</li>
-<li>Flight miles reward</li>
-<li>Gold bonus reward</li>
-</ul>
-<p>without manually re-checking every rule from scratch.</p>
-<hr />
-<h2 id="4-why-memory-makes-rete-efficient">4. Why Memory Makes Rete Efficient</h2>
-<p>The speedup is mainly from remembering partial work.</p>
-<h3 id="41-structural-sharing-one-test-many-rules">4.1 Structural sharing: one test, many rules</h3>
-<p>The same alpha result (<code>Account.RewardMiles &gt; 100000</code>) is reused:</p>
-<ul>
-<li>once for direct Gold assignment</li>
-<li>once as left input to the Gold+Flight join</li>
-</ul>
-<p>Without a network, duplicated condition checks are common as rule count grows.</p>
-<h3 id="42-temporal-reuse-only-process-changes">4.2 Temporal reuse: only process changes</h3>
-<p>When a new fact arrives, only relevant nodes are visited:</p>
-<ul>
-<li>Account fact never goes through flight alpha checks</li>
-<li>Flight fact never goes through account alpha checks</li>
-</ul>
-<p><code>ObjectTypeNode</code> and alpha memories prevent unrelated recomputation.</p>
-<h3 id="43-incremental-joins-with-cached-sides">4.3 Incremental joins with cached sides</h3>
-<p><code>BetaMemory</code> caches:</p>
-<ul>
-<li><code>LeftFacts</code></li>
-<li><code>RightFacts</code></li>
-<li><code>Joined</code></li>
-</ul>
-<p>So when one side changes, the engine only combines the new/changed side with the cached opposite side, instead of recomputing all pairings from zero.</p>
-<h3 id="44-tradeoff-memory-for-speed">4.4 Tradeoff: memory for speed</h3>
-<p>Rete pays extra memory to store matched and partially matched states. This is exactly the classic tradeoff highlighted in Rete literature: higher memory usage, much faster repeated matching on evolving fact sets.</p>
-<hr />
-<h2 id="5-a-compact-mental-model">5. A Compact Mental Model</h2>
-<p>You can think of this demo as:</p>
-<ul>
-<li>Alpha network answers: "Which individual facts satisfy which simple predicates?"</li>
-<li>Beta network answers: "Which combinations of already-matched facts satisfy cross-fact predicates?"</li>
-<li>Memories answer: "What have we already proven so we do not prove it again?"</li>
-</ul>
-<p>That last point is the heart of Rete efficiency.</p>
-<hr />
-<h2 id="6-what-this-demo-simplifies-still-useful">6. What This Demo Simplifies (Still Useful)</h2>
-<p>This implementation is intentionally minimal:</p>
-<ul>
-<li>It executes actions immediately instead of using a full agenda/conflict-resolution strategy.</li>
-<li>Its join condition in the sample always returns true after alpha filtering (real engines often join on business keys, such as account id).</li>
-<li>It demonstrates insertion/assertion flow only.</li>
-</ul>
-<p>Even with these simplifications, it clearly shows the two core Rete ideas:</p>
-<ol>
-<li>Facts propagate through a prebuilt network of tests.</li>
-<li>Node memories make matching incremental and fast.</li>
-</ol>
-<hr />
-<h2 id="references">References</h2>
-<ul>
-<li>Repository: https://github.com/Kicey/rete-algorithm-demo</li>
-<li>README reference article 1: https://community.sap.com/t5/technology-blog-posts-by-sap/introduction-to-the-rete-algorithm/ba-p/13534504</li>
-<li>README reference article 2: https://www.sparklinglogic.com/rete-algorithm-demystified-part-2/</li>
-<li>Runtime trace used in this post: output log provided in this workspace discussion.</li>
+<li>Charles L. Forgy, <a href="https://doi.org/10.1016/0004-3702(82)90020-0"><em>Rete: A Fast Algorithm for the Many Pattern/Many Object Pattern Match Problem</em></a>, <em>Artificial Intelligence</em> 19(1), 17–37, 1982. The original algorithm paper.</li>
+<li><a href="https://docs.drools.org/6.5.0.Final/drools-docs/html/ch05.html">Drools 6.5: Rete and ReteOO</a>. A versioned explanation of network structure and optimizations; its separate PHREAK section describes a later algorithm.</li>
+<li><a href="https://docs.drools.org/6.5.0.Final/drools-docs/html/ch07.html">Drools 6.5: working memory and agenda</a>. Fact lifecycle and execution control in a full rule engine.</li>
 </ul>
 
 

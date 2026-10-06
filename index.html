@@ -1145,11 +1145,12 @@
     </div>
   </header>
   <div class="md-post__content md-typeset">
-    <h2 id="rete-algorithm-introduction-through-a-minimal-go-demo"><a class="toclink" href="blog/2026/04/22/rete-algorithm-introduction-through-a-minimal-go-demo/">Rete Algorithm Introduction Through a Minimal Go Demo</a></h2>
+    <h2 id="rete-incremental-rule-matching-from-first-principles-to-go"><a class="toclink" href="blog/2026/04/22/rete-algorithm-introduction-through-a-minimal-go-demo/">Rete: Incremental Rule Matching, from First Principles to Go</a></h2>
+<p>A rule engine repeatedly asks which combinations of current facts satisfy its rules. Rete keeps those matches up to date by remembering filtered facts and partial matches, then propagating changes through a shared network. We will derive that network and implement a small matcher in Go.</p>
 
 
     
-      <p class="md-post__summary">A practical introduction to the Rete algorithm using a minimal Go demo, focusing on fact propagation through rules and why node memories make matching efficient.</p>
+      <p class="md-post__summary">Derive Rete from a naïve rule matcher, then build a runnable Go example with shared filters, real joins, fact retraction, and a separate agenda.</p>
     
 
     
@@ -1179,11 +1180,12 @@
     </div>
   </header>
   <div class="md-post__content md-typeset">
-    <h2 id="go-demo-rete"><a class="toclink" href="blog/2026/04/22/%E9%80%9A%E8%BF%87%E4%B8%80%E4%B8%AA%E6%9C%80%E5%B0%8F-go-demo-%E7%90%86%E8%A7%A3-rete-%E7%AE%97%E6%B3%95/">通过一个最小 Go Demo 理解 Rete 算法</a></h2>
+    <h2 id="rete-go"><a class="toclink" href="blog/2026/04/22/%E9%80%9A%E8%BF%87%E4%B8%80%E4%B8%AA%E6%9C%80%E5%B0%8F-go-demo-%E7%90%86%E8%A7%A3-rete-%E7%AE%97%E6%B3%95/">Rete 算法：从基本原理到 Go 增量规则匹配器</a></h2>
+<p>规则引擎反复回答一个问题：当前事实的哪些组合满足规则？Rete 保存已经过滤的事实和部分匹配结果，让变化沿共享网络传播，从而持续维护匹配结果。本文先推导这个网络，再用 Go 实现一个小型匹配器。</p>
 
 
     
-      <p class="md-post__summary">基于一个最小 Go Demo 介绍 Rete 算法，重点说明事实如何在规则网络中传播，以及节点内存为何能显著提升匹配效率。</p>
+      <p class="md-post__summary">从朴素规则匹配器推导 Rete，并用可运行的 Go 示例实现共享过滤、真实关联、事实撤回，以及独立的待执行议程。</p>
     
 
     
