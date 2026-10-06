@@ -1457,11 +1457,11 @@
 <p><strong>Alpha 内存</strong>保存通过某条 Alpha 测试路径的事实。<strong>Beta 内存</strong>保存满足规则某个前缀的元组。关联节点把匹配的右侧事实追加到左侧元组中。这套术语沿用 <a href="https://docs.drools.org/6.5.0.Final/drools-docs/html/ch05.html">Drools 文档中的 Rete 章节</a>。</p>
 <p>本例的网络如下：</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Account --&gt; [Status == Gold] --&gt; M_G --&gt; [tuple adapter] --&gt; B_G --+
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>                                                               | left
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>                                                               v
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>                                                             [Join] --&gt; B_B --&gt; T_bonus
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>                                                               ^
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>                                                               | right
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>                                                                   | left
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>                                                                   v
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>                                                                 [Join] --&gt; B_B --&gt; T_bonus
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>                                                                   ^
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>                                                                   | right
 </span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>Flight --&gt; [Miles &gt;= 500] --&gt; M_E --&gt; [Airline != Partner] --&gt; M_N-+
 </span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>                              |
 </span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>                              +--&gt; T_base
