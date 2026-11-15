@@ -12,6 +12,9 @@
       <loc>https://github.kicey.site/akka/akka-configuration/</loc>
       <lastmod>2024-06-10</lastmod>
     </url><url>
+      <loc>https://github.kicey.site/blog/2026/11/15/run-codex-remote-control-as-a-systemd-service/</loc>
+      <lastmod>2026-11-15</lastmod>
+    </url><url>
       <loc>https://github.kicey.site/blog/2025/06/04/fix-the-electron-fiddle-issue-about-user-namespace-privileges-on-ubuntu-2404/</loc>
       <lastmod>2026-04-09</lastmod>
     </url><url>
@@ -26,6 +29,9 @@
     </url><url>
       <loc>https://github.kicey.site/blog/2026/04/09/run-tun2socks-as-a-systemd-service-on-proxmox-vm-ubuntu-2404-ipv4--ipv6/</loc>
       <lastmod>2026-09-30</lastmod>
+    </url><url>
+      <loc>https://github.kicey.site/blog/2026/11/15/%E5%B0%86-codex-%E8%BF%9C%E7%A8%8B%E6%8E%A7%E5%88%B6%E9%85%8D%E7%BD%AE%E4%B8%BA-systemd-%E6%9C%8D%E5%8A%A1/</loc>
+      <lastmod>2026-11-15</lastmod>
     </url><url>
       <loc>https://github.kicey.site/blog/2025/06/29/%E5%9C%A8-ubuntu-%E4%B8%8A%E4%B8%BA%E6%96%B0%E4%B8%80%E4%BB%A3%E6%98%BE%E5%8D%A1%E5%A6%82-5060-ti%E5%AE%89%E8%A3%85-nvidia-%E9%A9%B1%E5%8A%A8%E5%92%8C-cuda-toolkit/</loc>
       <lastmod>2026-04-09</lastmod>
