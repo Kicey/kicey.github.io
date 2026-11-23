@@ -17,6 +17,11 @@ uv run --locked mkdocs serve
 - `mkdocs build --strict` writes the generated site to `site/` and treats warnings as build failures.
 - `mkdocs serve` starts the development server on <http://127.0.0.1:8000/> and rebuilds when source files change.
 
+Write inline LaTeX as `$...$` and display equations between `$$` delimiters on
+their own lines. The [Material math setup](https://squidfunk.github.io/mkdocs-material/reference/math/)
+uses Arithmatex at build time and MathJax CommonHTML in the browser. The
+MathJax version is pinned in `mkdocs.yml` and loaded from jsDelivr.
+
 ## Domain, Google verification, and project pages
 
 Configure these values in `mkdocs.yml`:

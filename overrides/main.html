@@ -1,5 +1,13 @@
 {% extends "base.html" %}
 
+{% block htmltitle %}
+  {% if page and page.pages is defined and page in page.pages[1:] %}
+    <title>{{ (page.meta.title or page.title) | striptags | e }} (page {{ page.pages.index(page) + 1 }}) - {{ config.site_name | e }}</title>
+  {% else %}
+    {{ super() }}
+  {% endif %}
+{% endblock %}
+
 {% block extrahead %}
   {% for token in config.extra.google_site_verification | default([]) %}
   <meta name="google-site-verification" content="{{ token | e }}" />

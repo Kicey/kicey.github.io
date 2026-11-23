@@ -5,6 +5,8 @@ site_author: kicey
 hooks:
   - hooks/seo.py
 markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
@@ -31,6 +33,9 @@ plugins:
         - tags
 extra_css:
   - stylesheets/extra.css
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@4.1.3/tex-mml-chtml.js
 theme:
   name: material
   custom_dir: overrides
