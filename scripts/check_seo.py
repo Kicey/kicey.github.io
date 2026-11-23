@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter
-from datetime import date
+from datetime import UTC, date, datetime
 from html.parser import HTMLParser
 import json
 from pathlib import Path
@@ -226,6 +226,7 @@ def main() -> int:
         namespace = {"s": "http://www.sitemaps.org/schemas/sitemap/0.9"}
         root = ET.parse(sitemap_path).getroot()
         sitemap_urls: set[str] = set()
+        today_utc = datetime.now(UTC).date()
         for url_node in root.findall("s:url", namespace):
             location_node = url_node.find("s:loc", namespace)
             if location_node is None or not location_node.text:
@@ -239,7 +240,7 @@ def main() -> int:
             if lastmod_node is not None and lastmod_node.text:
                 try:
                     modified = date.fromisoformat(lastmod_node.text.strip()[:10])
-                    if modified > date.today():
+                    if modified > today_utc:
                         fail(errors, f"future sitemap lastmod: {location}")
                 except ValueError:
                     fail(errors, f"invalid sitemap lastmod: {location}")

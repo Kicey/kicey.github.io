@@ -6,6 +6,7 @@ matter on older notes. Explicit front matter always wins over derived values.
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from html import unescape
 from pathlib import Path
 import re
@@ -95,14 +96,18 @@ def _git_updated(config, page) -> str | None:
     repository = Path(config.config_file_path).resolve().parent
     relative_path = src_path.resolve().relative_to(repository)
     result = subprocess.run(
-        ["git", "log", "-1", "--format=%cs", "--", str(relative_path)],
+        ["git", "log", "-1", "--format=%cI", "--", str(relative_path)],
         cwd=repository,
         capture_output=True,
         check=False,
         text=True,
     )
     updated = result.stdout.strip()
-    return updated or None
+    if not updated:
+        return None
+
+    # Keep the calendar date consistent with the sitemap checker's UTC clock.
+    return datetime.fromisoformat(updated).astimezone(UTC).date().isoformat()
 
 
 def _translation_alternates(page, files, config) -> list[dict[str, str]]:
