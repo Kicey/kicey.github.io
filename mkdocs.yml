@@ -5,8 +5,10 @@ site_author: kicey
 hooks:
   - hooks/seo.py
 markdown_extensions:
+  - admonition
   - pymdownx.arithmatex:
       generic: true
+  - pymdownx.details
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
